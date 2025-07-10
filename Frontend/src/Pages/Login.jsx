@@ -9,6 +9,8 @@ function Login() {
     handlelogin,
     loginEmail,
     loginPassword,
+    buttonLoading,
+    setButtonLoading,
   } = useAuth();
 
 
@@ -56,9 +58,12 @@ function Login() {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+          disabled={buttonLoading}
+          className={`w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition ${buttonLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          Login
+         {
+          buttonLoading ? "Logging in..." : "Login"
+         }
         </button>
 
         <button

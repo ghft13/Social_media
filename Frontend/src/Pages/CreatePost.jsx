@@ -4,13 +4,13 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function CreatePost() {
-
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [file, setFile] = useState(null);
+  const [uploadingPost, setUploadingPost] = useState(false);
 
   const navigate = useNavigate();
- const Backend_URL = import.meta.env.VITE_BACKEND_URL;
+  const Backend_URL = import.meta.env.VITE_BACKEND_URL;
 
   const handleFileSelect = (e) => {
     setFile(e.target.files[0]);
@@ -30,10 +30,11 @@ function CreatePost() {
     formData.append("desc", desc);
 
     try {
+      setUploadingPost(true);
       const res = await axios.post(
         `${Backend_URL}/api/posts/upload`,
         formData,
-        {   withCredentials: true,},
+        { withCredentials: true },
         {
           headers: { "Content-Type": "multipart/form-data" },
         }
@@ -44,6 +45,8 @@ function CreatePost() {
     } catch (err) {
       console.error("Upload failed:", err);
       alert("Upload failed. Please try again.");
+    } finally {
+      setUploadingPost(false);
     }
   };
 
@@ -77,6 +80,14 @@ function CreatePost() {
         ></textarea>
       </div>
 
+      {uploadingPost && (
+        <div className="flex justify-center items-center py-4">
+          <p className="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-lg shadow-md text-sm font-medium tracking-wide animate-pulse">
+            Uploading your post...
+          </p>
+        </div>
+      )}
+
       <div className="flex flex-col p-4">
         <div className="flex flex-col items-center gap-6 rounded-xl border-2 border-dashed border-[#dbdbdb] px-6 py-14">
           <div className="text-center">
@@ -107,9 +118,14 @@ function CreatePost() {
       <div className="px-4 py-3">
         <button
           onClick={handlePost}
-          className="w-full h-12 rounded-xl bg-black text-neutral-50 font-bold text-base"
+          disabled={uploadingPost}
+          className={`w-full h-12 rounded-xl font-bold text-base ${
+            uploadingPost
+              ? "bg-gray-400 text-white cursor-not-allowed"
+              : "bg-black text-neutral-50"
+          }`}
         >
-          Post
+          {uploadingPost ? "Please wait..." : "Post"}
         </button>
       </div>
 

@@ -13,6 +13,8 @@ const Signup = () => {
     username,
     setusername,
     handlesignup,
+    buttonLoading,
+    setButtonLoading,
   } = useAuth();
 
   const handlelogin = () => {
@@ -93,9 +95,13 @@ const Signup = () => {
         <div className="flex flex-col gap-4">
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+            disabled={buttonLoading}
+            className={`w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition ${buttonLoading}
+            buttonLoading ? "opacity-50 cursor-not-allowed" : ""
+          
+            `}
           >
-            Sign Up
+          {buttonLoading ? "Signning Up" : "Sign Up"}
           </button>
 
           <button

@@ -21,6 +21,7 @@ export const AuthProvider = ({ children }) => {
   });
 
   const [currentUser, setcurrentUser] = useState("");
+  const [buttonLoading,setButtonLoading]=useState(false)
 
   const Backend_URL = import.meta.env.VITE_BACKEND_URL;
   
@@ -30,6 +31,7 @@ export const AuthProvider = ({ children }) => {
   const menuiconRef = useRef(null);
 
   const handlesignup = async () => {
+    setButtonLoading(true)
     try {
       const res = await axios.post(
         `${Backend_URL}/api/auth/signup`,
@@ -53,6 +55,7 @@ export const AuthProvider = ({ children }) => {
         navigate("/Home");
       }
     } catch (err) {
+      setButtonLoading(false)
       const errorMessage =
         err.response?.data?.message ||
         "Something went wrong. Please try again.";
@@ -181,6 +184,8 @@ export const AuthProvider = ({ children }) => {
       });
       setuser(res.data.user);
       setUploads(res.data.uploads);
+      
+     
     } catch (err) {
       console.error("Error fetching profile data:", err);
     }
@@ -220,6 +225,8 @@ export const AuthProvider = ({ children }) => {
     getAllPost,
     currentUser,
     fetchProfileData,
+    buttonLoading,
+    setButtonLoading
   };
 
   return (

@@ -12,7 +12,7 @@ export const handleUpload = async (req, res) => {
     const filePath = isProduction
       ? req.file.path
       : `uploads/${req.file.filename}`.replace(/\\/g, "/");
-    console.log(req.user.username, "username from token");
+ 
 
     const newUpload = new UploadModel({
       title,

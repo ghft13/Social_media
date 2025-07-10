@@ -5,10 +5,13 @@ import { useNavigate } from "react-router-dom";
 import PostCard from "../Components/PostCard";
 import { useRef } from "react";
 import axios from "axios";
+import { set } from "date-fns";
+import { toast } from "react-toastify";
 function Profile() {
   const { user, uploads, fetchProfileData, currentUser } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("liked"); // liked | created
+  const [LoadingDp,setLoadingDp]=useState(false)
 
   const fileInputRef = useRef(null);
 
@@ -18,9 +21,9 @@ function Profile() {
 
     const formData = new FormData();
     formData.append("file", file); // ✅ match backend field name
-
+      setLoadingDp(true)
     try {
-      await axios.post(
+    let res=  await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/user/update-dp`,
         formData,
         {
@@ -28,9 +31,16 @@ function Profile() {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
+      if (res.status === 200) {
+        toast.success(res.data.message)
+      }
       fetchProfileData(); // refresh user data
     } catch (error) {
+       toast.error(res.data.error)
       console.error("Failed to update DP", error);
+    }
+    finally{
+      setLoadingDp(false)
     }
   };
 
@@ -65,6 +75,14 @@ function Profile() {
         <button className="bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800 text-sm font-medium">
           Edit Profile
         </button>
+
+        {
+          LoadingDp && (
+            <p>
+              Changing Your Profile picture...
+            </p>
+          )
+        }
       </div>
 
       <div className="flex flex-col items-center mb-10 relative">

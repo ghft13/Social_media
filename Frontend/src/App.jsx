@@ -1,8 +1,8 @@
 import react from "react";
 import "./index.css";
 import Signup from "./Pages/Signup";
+import Login from "./Pages/login";
 import Home from "./Pages/Home";
-import Login from "./Pages/Login";
 import About from "./Pages/About";
 import Profile from "./Pages/Profile";
 import PrivateRoute from "./Components/PrivateRoute";
@@ -20,7 +20,8 @@ function App() {
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Signup />}></Route>
-            <Route path="/login" element={<Login />}></Route>
+
+            <Route path="/Login" element={<Login />}></Route>
             <Route path="/About" element={<About />}></Route>
             <Route path="/Profile" element={<Profile />}></Route>
             <Route path="/CreatePost" element={<CreatePost />}></Route>
