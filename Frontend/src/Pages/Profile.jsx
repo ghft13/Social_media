@@ -21,7 +21,7 @@ function Profile() {
 
     try {
       await axios.post(
-        `${import.meta.env.VITE_Backend_URL}/api/user/update-dp`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/user/update-dp`,
         formData,
         {
           withCredentials: true,
@@ -73,7 +73,7 @@ function Profile() {
             src={
               user?.profileImage?.startsWith("http")
                 ? user.profileImage
-                : `${import.meta.env.VITE_Backend_URL}/${user.profileImage}`
+                : `${import.meta.env.VITE_BACKEND_URL}/${user.profileImage}`
             }
             alt="Profile"
             className="object-cover w-full h-full"

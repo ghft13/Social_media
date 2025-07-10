@@ -10,7 +10,7 @@ function CreatePost() {
   const [file, setFile] = useState(null);
 
   const navigate = useNavigate();
- const Backend_URL = import.meta.env.VITE_Backend_URL;
+ const Backend_URL = import.meta.env.VITE_BACKEND_URL;
 
   const handleFileSelect = (e) => {
     setFile(e.target.files[0]);

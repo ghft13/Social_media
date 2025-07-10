@@ -6,7 +6,7 @@ import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "../Context/AuthContext";
 import { useEffect } from "react";
 function PostCard({ post, userId }) {
-  const Backend_Url = import.meta.env.VITE_Backend_URL;
+  const Backend_Url = import.meta.env.VITE_BACKEND_URL;
   const mediaURL = `${Backend_Url}/${post.path}`;
   const { currentUser, fetchProfileData } = useAuth();
 

@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
 
   const [currentUser, setcurrentUser] = useState("");
 
-  const Backend_URL = import.meta.env.VITE_Backend_URL;
+  const Backend_URL = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate();
   const menuRef = useRef(null);
   const cancelRef = useRef(null);
