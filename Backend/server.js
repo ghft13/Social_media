@@ -12,17 +12,16 @@ dotenv.config();
 
 const app = express();
 
-
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use("/uploads", express.static(path.join(__dirname, "Uploads")));
 
-
 app.use(
   cors({
-    origin:["http://localhost:5173","https://social-media18.netlify.app"],
+    origin: ["http://localhost:5173",
+       "https://social-media18.netlify.app"
+      ],
     credentials: true,
   })
 );
@@ -35,7 +34,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", AuthRoutes);
 app.use("/api/posts", uploadRoutes);
-app.use('/api/user',ChangeDpRoutes)
+app.use("/api/user", ChangeDpRoutes);
 
 const PORT = process.env.PORT || 5000;
 
