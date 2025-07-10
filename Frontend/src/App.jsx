@@ -1,7 +1,7 @@
 import react from "react";
 import "./index.css";
 import Signup from "./Pages/Signup";
-import Login from "./Pages/login";
+import Login from "./Pages/Login";
 import Home from "./Pages/Home";
 import About from "./Pages/About";
 import Profile from "./Pages/Profile";
