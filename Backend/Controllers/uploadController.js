@@ -1,20 +1,17 @@
 import UploadModel from "../Models/UploadModel.js"; // ✅ import model
 import UserModel from "../Models/UserModel.js"; // Import User model
 
-
 export const handleUpload = async (req, res) => {
   try {
     const { title, desc } = req.body;
     const file = req.file;
 
     if (!file) return res.status(400).json({ error: "No file uploaded" });
+    const isProduction = process.env.NODE_ENV === "production";
 
-    // ✅ Use Cloudinary path in production, local path in development
-    const filePath =
-      process.env.NODE_ENV === "production"
-        ? file.path  // Cloudinary returns full URL
-        : `uploads/${file.filename}`.replace(/\\/g, "/"); // Local path with forward slashes
-
+    const filePath = isProduction
+      ? req.file.path
+      : `uploads/${req.file.filename}`.replace(/\\/g, "/");
     console.log(req.user.username, "username from token");
 
     const newUpload = new UploadModel({
@@ -43,10 +40,11 @@ export const handleUpload = async (req, res) => {
   }
 };
 
-
 export const getUploads = async (req, res) => {
   try {
-    const uploads = await UploadModel.find().sort({ createdAt: -1 }).populate('likes', 'username'); // Populate likes with usernames
+    const uploads = await UploadModel.find()
+      .sort({ createdAt: -1 })
+      .populate("likes", "username"); // Populate likes with usernames
     res.status(200).json({ uploads });
   } catch (error) {
     console.error("❌ Error in getUploads:", error);
@@ -121,4 +119,3 @@ export const getProfileData = async (req, res) => {
     res.status(500).json({ message: "Something went wrong." });
   }
 };
-
