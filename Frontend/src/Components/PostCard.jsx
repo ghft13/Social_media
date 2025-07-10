@@ -1,18 +1,22 @@
 import axios from "axios";
-import React from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CiHeart } from "react-icons/ci";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "../Context/AuthContext";
-import { useEffect } from "react";
+
 function PostCard({ post, userId }) {
   const Backend_Url = import.meta.env.VITE_BACKEND_URL;
-  const mediaURL = `${Backend_Url}/${post.path}`;
-  const { currentUser, fetchProfileData } = useAuth();
+
+  // ✅ Combine Cloudinary & local URL handling
+  const mediaURL = post.path.startsWith("http")
+    ? post.path
+    : `${Backend_Url}/${post.path}`;
+
+  const { currentUser } = useAuth();
 
   const [likedBy, setLikedBy] = useState([]);
   const [likeCount, setLikeCount] = useState(0);
-  const [likes, setlikes] = useState(false);
+  const [likes, setLikes] = useState(false);
   const [showLikesModal, setShowLikesModal] = useState(false);
 
   useEffect(() => {
@@ -22,21 +26,19 @@ function PostCard({ post, userId }) {
 
   useEffect(() => {
     if (post.likes && post.likes.length > 0) {
-      const isPopulated =
-        typeof post.likes[0] === "object" && post.likes[0]?.username;
+      const isPopulated = typeof post.likes[0] === "object" && post.likes[0]?.username;
 
-      setLikedBy(post.likes); // works in both cases
+      setLikedBy(post.likes);
       setLikeCount(post.likes.length);
-
-      if (isPopulated) {
-        setlikes(post.likes.some((user) => user._id === currentUser?.userId));
-      } else {
-        setlikes(post.likes.includes(currentUser?.userId));
-      }
+      setLikes(
+        isPopulated
+          ? post.likes.some((user) => user._id === currentUser?.userId)
+          : post.likes.includes(currentUser?.userId)
+      );
     } else {
       setLikedBy([]);
       setLikeCount(0);
-      setlikes(false);
+      setLikes(false);
     }
   }, [post.likes, currentUser]);
 
@@ -44,11 +46,11 @@ function PostCard({ post, userId }) {
     try {
       const res = await axios.post(
         `${Backend_Url}/api/posts/${post._id}/like`,
-        {}, // empty body
-        { withCredentials: true } // include cookies if using cookie-based auth
+        {},
+        { withCredentials: true }
       );
 
-      setlikes(res.data.liked);
+      setLikes(res.data.liked);
       setLikeCount(res.data.totalLikes);
       setLikedBy(res.data.likedBy);
     } catch (err) {
@@ -58,12 +60,10 @@ function PostCard({ post, userId }) {
 
   return (
     <div className="w-full flex justify-center mt-4">
-      <div className="w-full max-w-md rounded-xl shadow-lg  bg-white overflow-hidden">
+      <div className="w-full max-w-md rounded-xl shadow-lg bg-white overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-2">
-          <h1 className="text-sm font-semibold text-gray-800">
-            {post.username}
-          </h1>
+          <h1 className="text-sm font-semibold text-gray-800">{post.username}</h1>
           <p className="text-xs text-gray-500">
             {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
           </p>
@@ -77,13 +77,7 @@ function PostCard({ post, userId }) {
             className="w-full h-[400px] object-cover"
           />
         ) : post.mimetype.startsWith("video/") ? (
-          <video
-            autoPlay
-            loop
-            muted
-            controls
-            className="w-full h-[400px] object-cover"
-          >
+          <video autoPlay loop muted controls className="w-full h-[400px] object-cover">
             <source src={mediaURL} type={post.mimetype} />
           </video>
         ) : (
