@@ -1,8 +1,13 @@
 import mongoose from 'mongoose';
 
+
+
 const connectDb = async () => {
+
+  const mongoUrl = process.env.MONGO_ATLAS_URL || process.env.MONGO_URL;
+
   try {
-    await mongoose.connect(process.env.MONGO_URL, {
+    await mongoose.connect(mongoUrl, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
@@ -15,5 +20,3 @@ const connectDb = async () => {
 
 export default connectDb;
 
-
-// mongodb+srv://<db_username>:<db_password>@cluster0.di8bch4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
