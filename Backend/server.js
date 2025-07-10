@@ -1,0 +1,46 @@
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import connectDb from "./Config/Db.js"; // make sure Db.js uses export default
+import AuthRoutes from "./Routes/AuthRoutes.js";
+import path from "path";
+import { fileURLToPath } from "url";
+import uploadRoutes from "./Routes/UploadRoutes.js"; // Ensure this is the correct import path
+import ChangeDpRoutes from "./Routes/ChangeDpRoutes.js"; // Ensure this is the correct import path
+dotenv.config();
+
+const app = express();
+
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use("/uploads", express.static(path.join(__dirname, "Uploads")));
+
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+app.use(express.json());
+app.use(cookieParser());
+
+app.get("/", (req, res) => {
+  res.send("hey");
+});
+
+app.use("/api/auth", AuthRoutes);
+app.use("/api/posts", uploadRoutes);
+app.use('/api/user',ChangeDpRoutes)
+
+const PORT = process.env.PORT || 5000;
+
+connectDb();
+
+app.listen(PORT, () => {
+  console.log(`✅ Server running on port ${PORT}`);
+});
