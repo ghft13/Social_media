@@ -22,7 +22,7 @@ function Home() {
   const navigate = useNavigate();
   const userId = currentUser?.userId;
 
-  console.log(userId, "userid");
+
 
   useEffect(() => {
     getAllPost();

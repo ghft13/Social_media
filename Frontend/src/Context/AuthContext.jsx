@@ -23,6 +23,7 @@ export const AuthProvider = ({ children }) => {
   const [currentUser, setcurrentUser] = useState("");
 
   const Backend_URL = import.meta.env.VITE_BACKEND_URL;
+  
   const navigate = useNavigate();
   const menuRef = useRef(null);
   const cancelRef = useRef(null);
@@ -48,6 +49,7 @@ export const AuthProvider = ({ children }) => {
         setemail("");
         setusername("");
         setpassword("");
+        await checkAuth()
         navigate("/Home");
       }
     } catch (err) {
@@ -76,6 +78,7 @@ export const AuthProvider = ({ children }) => {
         setloginEmail("");
         setloginPassword("");
         setisAuthenticated(true);
+        await checkAuth();
         navigate("/home");
       }
     } catch (err) {
@@ -93,7 +96,9 @@ export const AuthProvider = ({ children }) => {
         withCredentials: true,
       });
 
+      console.log(res.data)
       setcurrentUser(res.data.user);
+
       if (res.data.success) {
         setisAuthenticated(true);
       } else {
@@ -150,6 +155,7 @@ export const AuthProvider = ({ children }) => {
 
       localStorage.removeItem("User");
       if (res.status == 200) {
+        await checkAuth()
         navigate("/login");
       }
     } catch (err) {
