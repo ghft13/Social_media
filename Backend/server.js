@@ -22,7 +22,7 @@ app.use("/uploads", express.static(path.join(__dirname, "Uploads")));
 
 app.use(
   cors({
-    origin:["http://localhost:5173","https://social-media18.netlify.app/"],
+    origin:["http://localhost:5173","https://social-media18.netlify.app"],
     credentials: true,
   })
 );
