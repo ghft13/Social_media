@@ -1,6 +1,7 @@
 import React from "react";
 import { useAuth } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { FaSpinner } from "react-icons/fa";
 function Login() {
   const navigate = useNavigate();
   const {

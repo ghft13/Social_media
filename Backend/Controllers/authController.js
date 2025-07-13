@@ -2,6 +2,8 @@ import bcrypt from "bcryptjs";
 import User from "../Models/UserModel.js";
 import { generateToken } from "../Utils/generateToken.js";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 const Signup = async (req, res) => {
   const { email, password, username } = req.body;
 
@@ -24,17 +26,21 @@ const Signup = async (req, res) => {
       password: hashpassword,
     });
 
-  const token = generateToken({ userId: newUser._id, email: newUser.email,username:newUser.username});
+    const token = generateToken({
+      userId: newUser._id,
+      email: newUser.email,
+      username: newUser.username,
+    });
 
     await newUser.save();
 
-    res
-      .cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "none",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      })
+  res.cookie("token", token, {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "lax",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+  path: "/",
+})
       .status(201)
       .json({ message: "Account has been Created", user: newUser });
   } catch (err) {
@@ -61,14 +67,20 @@ const login = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const token = generateToken({ userId: user._id, email: user.email, username: user.username });
+    const token = generateToken({
+      userId: user._id,
+      email: user.email,
+      username: user.username,
+    });
 
     res
       .cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        // secure: process.env.NODE_ENV === "production",
+        secure: true,
         sameSite: "none",
         maxAge: 7 * 24 * 60 * 60 * 1000,
+        path: "/",
       })
       .status(200)
       .json({
@@ -83,17 +95,19 @@ const login = async (req, res) => {
     res.status(500).json({ message: "server error" });
   }
 };
-
 const logout = async (req, res) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      // secure: process.env.NODE_ENV === "production",
+      secure:true,
       sameSite: "none",
+      path: "/",
     });
+
     res.status(200).json({ message: "Logout successful" });
   } catch (err) {
-    res.status(500).json({ message: "server error" });
+    res.status(500).json({ message: "Server error" });
   }
 };
 

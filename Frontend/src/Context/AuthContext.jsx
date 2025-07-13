@@ -152,13 +152,14 @@ export const AuthProvider = ({ children }) => {
 
   async function HandleLogout() {
     try {
-      const res = await axios.post(`${Backend_URL}/api/auth/logout`, {
+      const res = await axios.post(`${Backend_URL}/api/auth/logout`,{}, {
         withCredentials: true,
       });
 
       localStorage.removeItem("User");
+      console.log(res.data)
       if (res.status == 200) {
-        await checkAuth()
+         await checkAuth()
         navigate("/login");
       }
     } catch (err) {
@@ -191,9 +192,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
 
   const authvalues = {
     email,

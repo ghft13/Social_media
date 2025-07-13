@@ -21,7 +21,6 @@ const Signup = () => {
     navigate("/Login");
   };
 
-
   const handlesubmit = async (e) => {
     e.preventDefault();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -96,12 +95,12 @@ const Signup = () => {
           <button
             type="submit"
             disabled={buttonLoading}
-            className={`w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition ${buttonLoading}
-            buttonLoading ? "opacity-50 cursor-not-allowed" : ""
-          
-            `}
+            className={`w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition ${
+              buttonLoading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
-          {buttonLoading ? "Signning Up" : "Sign Up"}
+         {buttonLoading ? "Signing Up..." : "Sign Up"}
+
           </button>
 
           <button
