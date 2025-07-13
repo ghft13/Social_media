@@ -23,6 +23,11 @@ export const AuthProvider = ({ children }) => {
   const [currentUser, setcurrentUser] = useState("");
   const [buttonLoading, setButtonLoading] = useState(false);
 
+  const [title, setTitle] = useState("");
+  const [desc, setDesc] = useState("");
+  const [file, setFile] = useState(null);
+  const [uploadingPost, setUploadingPost] = useState(false);
+
   const Backend_URL = import.meta.env.VITE_BACKEND_URL;
 
   const navigate = useNavigate();
@@ -100,7 +105,6 @@ export const AuthProvider = ({ children }) => {
         withCredentials: true,
       });
 
-      console.log(res.data);
       setcurrentUser(res.data.user);
 
       if (res.data.success) {
@@ -118,49 +122,47 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-function showmenu() {
-  if (!menuRef.current || !cancelRef.current || !menuiconRef.current) return;
+  function showmenu() {
+    if (!menuRef.current || !cancelRef.current || !menuiconRef.current) return;
 
-  // Hide scroll on home component
-  if (homeRef.current) {
-   
-    homeRef.current.classList.add("overflow-hidden");
-    homeRef.current.classList.remove("overflow-y-auto");
+    // Hide scroll on home component
+    if (homeRef.current) {
+      homeRef.current.classList.add("overflow-hidden");
+      homeRef.current.classList.remove("overflow-y-auto");
+    }
+
+    menuRef.current.classList.remove("hidden");
+    cancelRef.current.classList.remove("hidden");
+    menuiconRef.current.classList.add("hidden");
+
+    gsap.to(menuRef.current, {
+      duration: 0.5,
+      left: "2%",
+      ease: "power2.out",
+    });
   }
 
-  menuRef.current.classList.remove("hidden");
-  cancelRef.current.classList.remove("hidden");
-  menuiconRef.current.classList.add("hidden");
+  function hideMenu() {
+    if (!menuRef.current || !cancelRef.current || !menuiconRef.current) return;
+    console.log("remove");
+    gsap.to(menuRef.current, {
+      duration: 0.5,
+      left: "110%",
+      ease: "power2.in",
+      onComplete: () => {
+        menuRef.current.classList.add("hidden");
 
-  gsap.to(menuRef.current, {
-    duration: 0.5,
-    left: "2%",
-    ease: "power2.out",
-  });
-}
+        // Re-enable scroll on home component
+        if (homeRef.current) {
+          homeRef.current.classList.remove("overflow-hidden");
+          homeRef.current.classList.add("overflow-y-auto");
+        }
+      },
+    });
 
-function hideMenu() {
-  if (!menuRef.current || !cancelRef.current || !menuiconRef.current) return;
-
-  gsap.to(menuRef.current, {
-    duration: 0.5,
-    left: "110%",
-    ease: "power2.in",
-    onComplete: () => {
-      menuRef.current.classList.add("hidden");
-
-      // Re-enable scroll on home component
-      if (homeRef.current) {
-        homeRef.current.classList.remove("overflow-hidden");
-        homeRef.current.classList.add("overflow-y-auto");
-      }
-    },
-  });
-
-  cancelRef.current.classList.add("hidden");
-  menuiconRef.current.classList.remove("hidden");
-}
-
+    cancelRef.current.classList.add("hidden");
+    menuiconRef.current.classList.remove("hidden");
+  }
 
   async function HandleLogout() {
     try {
@@ -173,7 +175,7 @@ function hideMenu() {
       );
 
       localStorage.removeItem("User");
-     
+
       if (res.status == 200) {
         await checkAuth();
         navigate("/login");
@@ -206,9 +208,49 @@ function hideMenu() {
     }
   };
 
+  const handleFileSelect = (e) => {
+    setFile(Array.from(e.target.files)); // ✅ Convert FileList to a regular array
+  };
+
+  const handlePost = async (e) => {
+    e.preventDefault();
+
+    if (!file || file.length === 0 || !title || !desc) {
+      toast.error(
+        "Please fill in all required fields and select at least one file."
+      );
+      return;
+    }
+
+    const formData = new FormData();
+    file.forEach((f) => formData.append("files", f)); // ✅ use .forEach
+
+    formData.append("title", title);
+    formData.append("desc", desc);
+
+    try {
+      setUploadingPost(true);
+
+      const res = await axios.post(
+        `${Backend_URL}/api/posts/upload`,
+        formData,
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+
+      navigate("/");
+    } catch (err) {
+      toast.error("Upload failed. Please try again.");
+    } finally {
+      setUploadingPost(false);
+    }
+  };
+
   useEffect(() => {
     checkAuth();
-  },[]);
+  }, []);
   const authvalues = {
     email,
     setemail,
@@ -241,7 +283,17 @@ function hideMenu() {
     fetchProfileData,
     buttonLoading,
     setButtonLoading,
-    homeRef
+    homeRef,
+    title,
+    setTitle,
+    desc,
+    setDesc,
+    file,
+    setFile,
+    uploadingPost,
+    setUploadingPost,
+    handleFileSelect,
+    handlePost,
   };
 
   return (

@@ -29,7 +29,10 @@ function Home() {
 
   return (
     <>
-      <div className="home h-screen w-screen px-2 py-2 overflow-y-auto" ref={homeRef}>
+      <div
+        className="home h-screen w-screen px-2 py-2 overflow-y-auto"
+        ref={homeRef}
+      >
         {/* Top bar */}
         <div className="flex justify-between items-center relative">
           <h1 className="text-2xl font-bold">ChillPlay</h1>
@@ -37,7 +40,7 @@ function Home() {
           <IoCloseCircleSharp
             ref={cancelRef}
             onClick={hideMenu}
-            className="text-2xl absolute right-0 hidden"
+            className="text-3xl absolute right-0 hidden cursor-pointer z-50"
           />
         </div>
 
@@ -63,9 +66,9 @@ function Home() {
 
         <div
           ref={menuRef}
-          className="flex hidden justify-center items-center relative h-screen top-0 left-[110%]"
+          className="flex hidden justify-center items-center relative h-screen -top-20 left-[110%]"
         >
-          <div className="bg-black h-[90%] w-[90%] text-white text-xl flex flex-col  justify-between items-start  py-5 rounded-3xl">
+          <div className="bg-black h-[70%] w-[90%] text-white text-xl flex flex-col  justify-between items-start  py-5 rounded-3xl">
             <div className="flex flex-col gap-10 px-5">
               <h1>Explore</h1>
               <Link to="/Profile">Profile</Link>
@@ -73,7 +76,7 @@ function Home() {
               <Link to="/createpost">Create Post</Link>
             </div>
 
-            <div className=" pb-32 flex w-full px-5 justify-between">
+            <div className="flex w-full px-5 justify-between">
               <Link onClick={HandleLogout}>Logout</Link>
               <Link onClick={() => navigate("/login")}>LogIn</Link>
             </div>

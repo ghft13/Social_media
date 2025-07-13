@@ -2,52 +2,21 @@ import React, { useState } from "react";
 import { IoCloseSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import { useAuth } from "../Context/AuthContext";
 function CreatePost() {
-  const [title, setTitle] = useState("");
-  const [desc, setDesc] = useState("");
-  const [file, setFile] = useState(null);
-  const [uploadingPost, setUploadingPost] = useState(false);
-
+  const {
+    title,
+    setTitle,
+    desc,
+    setDesc,
+    file,
+    setFile,
+    uploadingPost,
+    setUploadingPost,
+    handleFileSelect,
+    handlePost,
+  } = useAuth();
   const navigate = useNavigate();
-  const Backend_URL = import.meta.env.VITE_BACKEND_URL;
-
-  const handleFileSelect = (e) => {
-    setFile(e.target.files[0]);
-  };
-
-  const handlePost = async (e) => {
-    e.preventDefault();
-
-    if (!file || !title || !desc) {
-      alert("Please fill in all required fields and select a file.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("title", title);
-    formData.append("desc", desc);
-
-    try {
-      setUploadingPost(true);
-      const res = await axios.post(
-        `${Backend_URL}/api/posts/upload`,
-        formData,
-        { withCredentials: true },
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-
-      navigate("/"); // redirect after successful upload
-    } catch (err) {
-      console.error("Upload failed:", err);
-      alert("Upload failed. Please try again.");
-    } finally {
-      setUploadingPost(false);
-    }
-  };
 
   return (
     <div className="flex min-h-screen flex-col justify-between bg-neutral-50 overflow-x-hidden">
@@ -100,6 +69,7 @@ function CreatePost() {
             Browse
             <input
               type="file"
+              multiple
               accept="image/*,video/*"
               onChange={handleFileSelect}
               className="hidden"
