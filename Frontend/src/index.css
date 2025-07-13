@@ -3,3 +3,7 @@
 .scrollbar-hidden::-webkit-scrollbar{
     display: none;
 }
+
+body.overflow-hidden {
+  background-color: green; /* optional */
+}

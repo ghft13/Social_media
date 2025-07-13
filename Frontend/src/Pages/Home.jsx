@@ -18,6 +18,7 @@ function Home() {
     setUploads,
     getAllPost,
     currentUser,
+    homeRef,
   } = useAuth();
   const navigate = useNavigate();
   const userId = currentUser?.userId;
@@ -28,7 +29,7 @@ function Home() {
 
   return (
     <>
-      <div className="home w-screen px-2 py-2">
+      <div className="home h-screen w-screen px-2 py-2 overflow-y-auto" ref={homeRef}>
         {/* Top bar */}
         <div className="flex justify-between items-center relative">
           <h1 className="text-2xl font-bold">ChillPlay</h1>

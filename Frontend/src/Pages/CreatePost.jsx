@@ -40,7 +40,6 @@ function CreatePost() {
         }
       );
 
-      console.log(res.data);
       navigate("/"); // redirect after successful upload
     } catch (err) {
       console.error("Upload failed:", err);

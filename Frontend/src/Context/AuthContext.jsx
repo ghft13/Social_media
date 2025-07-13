@@ -29,6 +29,7 @@ export const AuthProvider = ({ children }) => {
   const menuRef = useRef(null);
   const cancelRef = useRef(null);
   const menuiconRef = useRef(null);
+  const homeRef = useRef(null);
 
   const handlesignup = async () => {
     setButtonLoading(true);
@@ -117,41 +118,49 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  function showmenu() {
-    if (!menuRef.current || !cancelRef.current || !menuiconRef.current) return;
+function showmenu() {
+  if (!menuRef.current || !cancelRef.current || !menuiconRef.current) return;
 
-    // Show the menu container
-    menuRef.current.classList.remove("hidden");
-    cancelRef.current.classList.remove("hidden");
-    menuiconRef.current.classList.add("hidden");
-
-    document.body.classList.add('overflow-hidden')
-    // Animate the menu sliding in
-    gsap.to(menuRef.current, {
-      duration: 0.5,
-      left: "2%",
-      ease: "power2.out",
-    });
+  // Hide scroll on home component
+  if (homeRef.current) {
+   
+    homeRef.current.classList.add("overflow-hidden");
+    homeRef.current.classList.remove("overflow-y-auto");
   }
 
-  function hideMenu() {
-    if (!menuRef.current || !cancelRef.current || !menuiconRef.current) return;
+  menuRef.current.classList.remove("hidden");
+  cancelRef.current.classList.remove("hidden");
+  menuiconRef.current.classList.add("hidden");
 
+  gsap.to(menuRef.current, {
+    duration: 0.5,
+    left: "2%",
+    ease: "power2.out",
+  });
+}
 
-    document.body.classList.remove('overflow-hidden')
-    // Animate the menu sliding out, then hide it
-    gsap.to(menuRef.current, {
-      duration: 0.5,
-      left: "110%",
-      ease: "power2.in",
-      onComplete: () => {
-        menuRef.current.classList.add("hidden");
-      },
-    });
+function hideMenu() {
+  if (!menuRef.current || !cancelRef.current || !menuiconRef.current) return;
 
-    cancelRef.current.classList.add("hidden");
-    menuiconRef.current.classList.remove("hidden");
-  }
+  gsap.to(menuRef.current, {
+    duration: 0.5,
+    left: "110%",
+    ease: "power2.in",
+    onComplete: () => {
+      menuRef.current.classList.add("hidden");
+
+      // Re-enable scroll on home component
+      if (homeRef.current) {
+        homeRef.current.classList.remove("overflow-hidden");
+        homeRef.current.classList.add("overflow-y-auto");
+      }
+    },
+  });
+
+  cancelRef.current.classList.add("hidden");
+  menuiconRef.current.classList.remove("hidden");
+}
+
 
   async function HandleLogout() {
     try {
@@ -164,7 +173,7 @@ export const AuthProvider = ({ children }) => {
       );
 
       localStorage.removeItem("User");
-      console.log(res.data);
+     
       if (res.status == 200) {
         await checkAuth();
         navigate("/login");
@@ -232,6 +241,7 @@ export const AuthProvider = ({ children }) => {
     fetchProfileData,
     buttonLoading,
     setButtonLoading,
+    homeRef
   };
 
   return (
