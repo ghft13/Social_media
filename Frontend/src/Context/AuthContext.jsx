@@ -21,17 +21,17 @@ export const AuthProvider = ({ children }) => {
   });
 
   const [currentUser, setcurrentUser] = useState("");
-  const [buttonLoading,setButtonLoading]=useState(false)
+  const [buttonLoading, setButtonLoading] = useState(false);
 
   const Backend_URL = import.meta.env.VITE_BACKEND_URL;
-  
+
   const navigate = useNavigate();
   const menuRef = useRef(null);
   const cancelRef = useRef(null);
   const menuiconRef = useRef(null);
 
   const handlesignup = async () => {
-    setButtonLoading(true)
+    setButtonLoading(true);
     try {
       const res = await axios.post(
         `${Backend_URL}/api/auth/signup`,
@@ -51,11 +51,11 @@ export const AuthProvider = ({ children }) => {
         setemail("");
         setusername("");
         setpassword("");
-        await checkAuth()
-        navigate("/Home");
+        await checkAuth();
+        navigate("/");
       }
     } catch (err) {
-      setButtonLoading(false)
+      setButtonLoading(false);
       const errorMessage =
         err.response?.data?.message ||
         "Something went wrong. Please try again.";
@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }) => {
         setloginPassword("");
         setisAuthenticated(true);
         await checkAuth();
-        navigate("/home");
+        navigate("/");
       }
     } catch (err) {
       toast.error(
@@ -99,7 +99,7 @@ export const AuthProvider = ({ children }) => {
         withCredentials: true,
       });
 
-      console.log(res.data)
+      console.log(res.data);
       setcurrentUser(res.data.user);
 
       if (res.data.success) {
@@ -125,6 +125,7 @@ export const AuthProvider = ({ children }) => {
     cancelRef.current.classList.remove("hidden");
     menuiconRef.current.classList.add("hidden");
 
+    document.body.classList.add('overflow-hidden')
     // Animate the menu sliding in
     gsap.to(menuRef.current, {
       duration: 0.5,
@@ -136,6 +137,8 @@ export const AuthProvider = ({ children }) => {
   function hideMenu() {
     if (!menuRef.current || !cancelRef.current || !menuiconRef.current) return;
 
+
+    document.body.classList.remove('overflow-hidden')
     // Animate the menu sliding out, then hide it
     gsap.to(menuRef.current, {
       duration: 0.5,
@@ -152,14 +155,18 @@ export const AuthProvider = ({ children }) => {
 
   async function HandleLogout() {
     try {
-      const res = await axios.post(`${Backend_URL}/api/auth/logout`,{}, {
-        withCredentials: true,
-      });
+      const res = await axios.post(
+        `${Backend_URL}/api/auth/logout`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
 
       localStorage.removeItem("User");
-      console.log(res.data)
+      console.log(res.data);
       if (res.status == 200) {
-         await checkAuth()
+        await checkAuth();
         navigate("/login");
       }
     } catch (err) {
@@ -185,14 +192,14 @@ export const AuthProvider = ({ children }) => {
       });
       setuser(res.data.user);
       setUploads(res.data.uploads);
-      
-     
     } catch (err) {
       console.error("Error fetching profile data:", err);
     }
   };
 
-
+  useEffect(() => {
+    checkAuth();
+  },[]);
   const authvalues = {
     email,
     setemail,
@@ -224,7 +231,7 @@ export const AuthProvider = ({ children }) => {
     currentUser,
     fetchProfileData,
     buttonLoading,
-    setButtonLoading
+    setButtonLoading,
   };
 
   return (

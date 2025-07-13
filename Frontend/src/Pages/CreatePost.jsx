@@ -41,7 +41,7 @@ function CreatePost() {
       );
 
       console.log(res.data);
-      navigate("/home"); // redirect after successful upload
+      navigate("/"); // redirect after successful upload
     } catch (err) {
       console.error("Upload failed:", err);
       alert("Upload failed. Please try again.");
@@ -54,7 +54,7 @@ function CreatePost() {
     <div className="flex min-h-screen flex-col justify-between bg-neutral-50 overflow-x-hidden">
       <div className="flex items-center bg-neutral-50 p-4 pb-2 justify-between">
         <div className="text-[#141414] flex size-12 items-center">
-          <IoCloseSharp size={24} onClick={() => navigate("/Home")} />
+          <IoCloseSharp size={24} onClick={() => navigate("/")} />
         </div>
         <h2 className="text-[#141414] text-lg font-bold flex-1 text-center pr-12">
           New Post

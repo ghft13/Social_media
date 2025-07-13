@@ -70,7 +70,7 @@ function Profile() {
       <div className="flex items-center justify-between mb-6">
         <FaArrowLeftLong
           className="text-2xl cursor-pointer"
-          onClick={() => navigate("/home")}
+          onClick={() => navigate("/")}
         />
         <button className="bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800 text-sm font-medium">
           Edit Profile

@@ -46,7 +46,7 @@ function About() {
     >
       <div className="inline-flex items-center gap-2 px-6 py-2 bg-black text-white text-xl rounded-full hover:bg-gray-800 transition duration-300">
         <IoArrowBackSharp className="text-2xl" />
-        <Link to="/Home" className="text-white no-underline">
+        <Link to="/" className="text-white no-underline">
           Back
         </Link>
       </div>

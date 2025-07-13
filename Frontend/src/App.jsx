@@ -12,6 +12,7 @@ import { AuthProvider } from "./Context/AuthContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CreatePost from "./Pages/CreatePost";
+import HomeFallback from "./Components/HomeFallback";
 
 function App() {
   return (
@@ -19,16 +20,32 @@ function App() {
       <Router>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<Signup />}></Route>
+            <Route path="/" element={<PrivateRoute fallback={<HomeFallback/>}><Home/></PrivateRoute>}></Route>
             <Route path="/Login" element={<Login />}></Route>
-            <Route path="/About" element={<About />}></Route>
-            <Route path="/Profile" element={<Profile />}></Route>
-            <Route path="/CreatePost" element={<CreatePost />}></Route>
+            <Route path="/Signup" element={<Signup />}></Route>
+
             <Route
-              path="/home"
+              path="/Profile"
               element={
                 <PrivateRoute>
-                  <Home />
+                  <Profile />
+                </PrivateRoute>
+              }
+            ></Route>
+
+            <Route
+              path="/About"
+              element={
+                <PrivateRoute>
+                  <About />
+                </PrivateRoute>
+              }
+            ></Route>
+            <Route
+              path="/CreatePost"
+              element={
+                <PrivateRoute>
+                  <CreatePost />
                 </PrivateRoute>
               }
             ></Route>

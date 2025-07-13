@@ -22,8 +22,6 @@ function Home() {
   const navigate = useNavigate();
   const userId = currentUser?.userId;
 
-
-
   useEffect(() => {
     getAllPost();
   }, []);
@@ -66,12 +64,18 @@ function Home() {
           ref={menuRef}
           className="flex hidden justify-center items-center relative h-screen top-0 left-[110%]"
         >
-          <div className="bg-black h-[90%] w-[90%] text-white text-xl flex flex-col gap-10 items-start px-10 py-5 rounded-3xl">
-            <h1>Explore</h1>
-            <Link to="/Profile">Profile</Link>
-            <Link onClick={HandleLogout}>Logout</Link>
-            <Link to="/About">About</Link>
-            <Link to="/createpost">Create Post</Link>
+          <div className="bg-black h-[90%] w-[90%] text-white text-xl flex flex-col  justify-between items-start  py-5 rounded-3xl">
+            <div className="flex flex-col gap-10 px-5">
+              <h1>Explore</h1>
+              <Link to="/Profile">Profile</Link>
+              <Link to="/About">About</Link>
+              <Link to="/createpost">Create Post</Link>
+            </div>
+
+            <div className=" pb-32 flex w-full px-5 justify-between">
+              <Link onClick={HandleLogout}>Logout</Link>
+              <Link onClick={() => navigate("/login")}>LogIn</Link>
+            </div>
           </div>
         </div>
 
