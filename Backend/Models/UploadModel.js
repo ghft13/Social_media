@@ -4,9 +4,7 @@ const uploadSchema = new mongoose.Schema(
   {
     title: String,
     desc: String,
-    filename: String,
-    path: String,
-    mimetype: String,
+    files:[{filename:String,path:String,mimetype:String}] ,
      username: String,
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }]
