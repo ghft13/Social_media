@@ -87,7 +87,7 @@ function Profile() {
           className="text-sm mt-2 text-blue-600 hover:underline font-bold"
         >
           {LoadingDp ? (
-            "Changing Profile Picture..."
+            "Changing Your Profile Picture..."
           ) : (
             <span>
               Change Your profile picture <FaUserEdit className="inline ml-1" />

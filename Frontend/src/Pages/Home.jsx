@@ -27,6 +27,7 @@ function Home() {
     getAllPost();
   }, []);
 
+
   return (
     <>
       <div
@@ -84,7 +85,10 @@ function Home() {
         </div>
 
         {/* Uploaded posts */}
-        <div className="w-full mt-10 flex flex-col gap-10 justify-center items-center pb-24">
+        <div
+          className="w-full mt-10 flex flex-col gap-10 justify-center items-center pb-24 "
+          id="scroll-posts"
+        >
           {uploads.length > 0 ? (
             uploads.map((item) => (
               <PostCard key={item._id} post={item} userId={userId} />
