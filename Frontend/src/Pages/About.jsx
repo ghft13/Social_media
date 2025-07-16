@@ -54,18 +54,22 @@ function About() {
       <div className="text-center mb-12 py-10">
         <h1 className="text-4xl md:text-5xl font-bold mb-4">About Us</h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          A safe and fun social media platform for all age groups.
+          A safe and fun social media platform for all age groups. A platform
+          that helps new creators get discovered — faster
         </p>
       </div>
 
       <div className="space-y-10">
         <section>
           <h2 className="text-2xl font-semibold mb-3">Our Mission</h2>
-          <p className="text-gray-700 leading-relaxed">
+          <p className="text-gray-700 leading-relaxed capitalize">
             Our mission is to build a social media platform where people of all
             ages — especially children — can safely engage with content without
             the risk of encountering inappropriate material. With 0% nudity,
             we’re committed to making the internet a cleaner and safer place.
+            We’re building more than a social media app. We’re creating a
+            digital playground where safety meets creativity.and parents can
+            finally breathe easy.
           </p>
         </section>
 
@@ -75,35 +79,46 @@ function About() {
             In today's world, it's hard to find a platform where parents can
             feel completely safe letting their children explore. Our platform
             aims to change that. We believe entertainment should be wholesome,
-            creative, and inspiring — not risky.
+            creative, and inspiring — not risky. Social platforms today are made
+            for clicks — not care. We believe it's time for something different.
+            A space that’s not just addicting, but uplifting. Safe doesn’t mean
+            boring — it means **trust**. And that’s what we’re building.
           </p>
         </section>
 
         <section>
           <h2 className="text-2xl font-semibold mb-3">Empowering Creators</h2>
-          <p className="text-gray-700 leading-relaxed">
+          <p className="text-gray-700 leading-relaxed capitalize">
             Not only are we creating a safe space for users, but we’re also
             providing powerful tools and monetization opportunities for
-            creators. We envision a platform where your creativity is rewarded
-            fairly — without compromising values or ethics.
+            creators.
+            <p className="text-gray-700 leading-relaxed capitalize">
+              Every creator starts small. We’re here for the ones who haven’t
+              gone viral — yet. Whether you're filming on your phone or speaking
+              your truth for the first time, our platform gives you the tools
+              and space to grow, share, and get discovered.
+            </p>
           </p>
         </section>
 
         <section>
           <h2 className="text-2xl font-semibold mb-3">Looking Ahead</h2>
           <p className="text-gray-700 leading-relaxed">
-            This is just the beginning. We have many innovative ideas in the
-            pipeline to make our platform more engaging, empowering, and
-            globally accessible. Join us on this journey to redefine what social
-            media can be.
+            <p className="text-gray-700 leading-relaxed">
+              This isn’t just a launch — it’s a movement. We’re rewriting what
+              social media can be: safe, and creator-first. We have bold ideas
+              ahead, and we’d love for you to shape them with us.
+            </p>
           </p>
         </section>
 
         <div className="text-center mt-12">
           <h3 className="text-xl font-semibold mb-2">
-            Want to be a part of this revolution?
+            Ready to be part of something better?
           </h3>
-          <h2 className="px-6 py-3 text-black text-3xl">Become a User</h2>
+          <h2 className="px-6 py-3 text-black text-3xl">
+            Join the community. Change the story.
+          </h2>
         </div>
       </div>
     </div>

@@ -27,7 +27,6 @@ function Home() {
     getAllPost();
   }, []);
 
-
   return (
     <>
       <div
@@ -70,16 +69,30 @@ function Home() {
           className="flex hidden justify-center items-center relative h-screen -top-20 left-[110%]"
         >
           <div className="bg-black h-[70%] w-[90%] text-white text-xl flex flex-col  justify-between items-start  py-5 rounded-3xl">
-            <div className="flex flex-col gap-10 px-5">
+            <div className="flex flex-col gap-6 px-5">
               <h1>Explore</h1>
               <Link to="/Profile">Profile</Link>
-              <Link to="/About">About</Link>
               <Link to="/createpost">Create Post</Link>
+              <Link to="/About">About</Link>
+              <Link to="/Terms">Terms & Conditions</Link>
+              <Link to="/Privacy">Privacy Policy</Link>
+              <Link to="/Community">Community Rules</Link>
             </div>
 
             <div className="flex w-full px-5 justify-between">
-              <Link onClick={HandleLogout}>Logout</Link>
-              <Link onClick={() => navigate("/login")}>LogIn</Link>
+              <Link
+                onClick={HandleLogout}
+                className="bg-red-600 text-white px-5 py-2 rounded-full hover:bg-red-700 transition duration-300"
+              >
+                Logout
+              </Link>
+
+              <Link
+                onClick={() => navigate("/login")}
+                className="bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition duration-300"
+              >
+                LogIn
+              </Link>
             </div>
           </div>
         </div>
