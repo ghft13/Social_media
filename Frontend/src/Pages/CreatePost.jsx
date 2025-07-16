@@ -76,10 +76,17 @@ function CreatePost() {
             />
           </label>
 
-          {file && (
-            <p className="text-sm text-[#141414] mt-2">
-              Selected: <strong>{file.name}</strong>
-            </p>
+          {file?.length > 0 && (
+            <div className="mt-2 w-full text-sm text-[#141414]">
+              <p className="font-semibold mb-1">Selected Files:</p>
+              <ul className="list-disc list-inside space-y-1">
+                {file.map((f, idx) => (
+                  <li key={idx}>
+                    <strong>{f.name}</strong>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </div>
       </div>

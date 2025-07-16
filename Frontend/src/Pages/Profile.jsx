@@ -8,11 +8,13 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 function Profile() {
-  const { user, fetchProfileData, currentUser } = useAuth();
+  const { user, fetchProfileData, currentUser,HandleDeletePost} = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("liked");
   const [LoadingDp, setLoadingDp] = useState(false);
   const fileInputRef = useRef(null);
+
+  const Backend_URL = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     fetchProfileData();
@@ -50,6 +52,8 @@ function Profile() {
   const createdPosts = user?.posts || [];
 
   const displayedPosts = activeTab === "liked" ? likedPosts : createdPosts;
+
+
 
   return (
     <div className="w-full min-h-screen px-4 py-6 bg-white text-gray-800">
@@ -127,26 +131,27 @@ function Profile() {
         </div>
       </div>
 
-    <div className="Posts px-4 py-6 bg-gray-50 rounded-2xl shadow-md w-full max-w-md mx-auto">
-  <h2 className="text-2xl font-bold text-center mb-6">
-    {activeTab === "liked" ? "Posts You Liked" : "Your Posts"}
-  </h2>
+      <div className="Posts px-4 py-6 bg-gray-50 rounded-2xl shadow-md w-full max-w-md mx-auto flex flex-col">
+        <h2 className="text-2xl font-bold text-center mb-6">
+          {activeTab === "liked" ? "Posts You Liked" : "Your Posts"}
+        </h2>
 
-  {displayedPosts.length === 0 ? (
-    <p className="text-center text-gray-500">No posts to display.</p>
-  ) : (
-    <div className="grid grid-cols-1 gap-6 w-full">
-      {displayedPosts.map((post) => (
-        <PostCard
-          key={post._id}
-          post={post}
-          userId={currentUser?.userId}
-        />
-      ))}
-    </div>
-  )}
-</div>
-
+        {displayedPosts.length === 0 ? (
+          <p className="text-center text-gray-500">No posts to display.</p>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 w-full">
+            {displayedPosts.map((post) => (
+              <PostCard
+                key={post._id}
+                post={post}
+                userId={currentUser?.userId}
+                HandleDeletePost={HandleDeletePost}
+                activeTab={activeTab}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

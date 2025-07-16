@@ -240,11 +240,28 @@ export const AuthProvider = ({ children }) => {
         }
       );
 
+      setTitle("");
+      setFile("");
+      setDesc("")
+
       navigate("/");
     } catch (err) {
       toast.error("Upload failed. Please try again.");
     } finally {
       setUploadingPost(false);
+    }
+  };
+
+  const HandleDeletePost = async (postId) => {
+    try {
+      const res = await axios.delete(`${Backend_URL}/api/posts/${postId}`, {
+        withCredentials: true,
+      });
+      toast.success(res.data.message);
+
+      fetchProfileData();
+    } catch (err) {
+      toast.error("Failed to delete post");
     }
   };
 
@@ -294,6 +311,7 @@ export const AuthProvider = ({ children }) => {
     setUploadingPost,
     handleFileSelect,
     handlePost,
+    HandleDeletePost,
   };
 
   return (

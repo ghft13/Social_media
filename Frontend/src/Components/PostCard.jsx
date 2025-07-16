@@ -10,9 +10,10 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 
-function PostCard({ post, userId }) {
+function PostCard({ post, userId, HandleDeletePost, activeTab }) {
   const Backend_Url = import.meta.env.VITE_BACKEND_URL;
 
+  
   // ✅ Combine Cloudinary & local URL handling
 
   const { currentUser } = useAuth();
@@ -176,6 +177,17 @@ function PostCard({ post, userId }) {
               </div>
             </div>
           )}
+
+          <div className="flex justify-center items-center ">
+            {activeTab === "created" && (
+              <button
+                onClick={() => HandleDeletePost(post._id)}
+                className="mt-6 w-[50%] bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-full flex items-center justify-center gap-2 shadow-md transition duration-300 ease-in-out "
+              >
+                Delete
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
