@@ -206,3 +206,19 @@ export const getProfileData = async (req, res) => {
     res.status(500).json({ message: "Something went wrong." });
   }
 };
+
+export const DeletePost = async (req, res) => {
+  const { postId } = req.params;
+ 
+  if (!postId) {
+    return res.status(400).json({ message: "Post Id is required" });
+  }
+
+  try {
+    await UploadModel.findByIdAndDelete(postId);
+
+    return res.status(200).json({ message: "Post deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Error deleting post", error });
+  }
+};
