@@ -14,6 +14,7 @@ export const AuthProvider = ({ children }) => {
   const [loginPassword, setloginPassword] = useState("");
   const [loading, setloading] = useState(true);
   const [isAuthenticated, setisAuthenticated] = useState(false);
+  const [category, setCategory] = useState("");
   const [uploads, setUploads] = useState([]);
   const [user, setuser] = useState(() => {
     const storedUser = localStorage.getItem("User");
@@ -215,7 +216,7 @@ export const AuthProvider = ({ children }) => {
   const handlePost = async (e) => {
     e.preventDefault();
 
-    if (!file || file.length === 0 || !title || !desc) {
+    if (!file || file.length === 0 || !title || !desc || !category) {
       toast.error(
         "Please fill in all required fields and select at least one file."
       );
@@ -227,6 +228,7 @@ export const AuthProvider = ({ children }) => {
 
     formData.append("title", title);
     formData.append("desc", desc);
+    formData.append("category", category);
 
     try {
       setUploadingPost(true);
@@ -249,8 +251,8 @@ export const AuthProvider = ({ children }) => {
       if (err.response && err.response.data) {
         const { error, tip, message } = err.response.data;
         if (error) toast.error(error);
-       else if (tip) toast.info(tip);
-         else if (message) toast.info(message);
+        else if (tip) toast.info(tip);
+        else if (message) toast.info(message);
       } else {
         toast.error("Upload failed. Please try again.");
       }
@@ -319,6 +321,8 @@ export const AuthProvider = ({ children }) => {
     handleFileSelect,
     handlePost,
     HandleDeletePost,
+    category,
+    setCategory,
   };
 
   return (

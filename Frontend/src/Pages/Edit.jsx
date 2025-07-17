@@ -1,6 +1,8 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import { FaArrowLeftLong } from "react-icons/fa6";
+import { useNavigate} from "react-router-dom";
 function Edit() {
   const [activeField, setActiveField] = useState(null); // 'username', 'email', 'password'
   const [username, setUsername] = useState("");
@@ -8,6 +10,7 @@ function Edit() {
   const [email, setEmail] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const navigate=useNavigate()
 
   const Backend_URL = import.meta.env.VITE_BACKEND_URL;
   const handleSubmit = async (e) => {
@@ -22,31 +25,38 @@ function Edit() {
 
     //console.log("Form submitted:", data);
 
-   try {
-  const res = await axios.post(
-    `${Backend_URL}/api/user/update-profile`,
-    data,
-    { withCredentials: true }
-  );
-  toast.success(res.data.message || "Updated successfully");
+    try {
+      const res = await axios.post(
+        `${Backend_URL}/api/user/update-profile`,
+        data,
+        { withCredentials: true }
+      );
+      toast.success(res.data.message || "Updated successfully");
 
-  // Reset state and form
-  setUsername("");
-  setPreviousEmail("");
-  setEmail("");
-  setOldPassword("");
-  setNewPassword("");
-  setActiveField(null);
-} catch (err) {
-  const errorMsg =
-    err.response?.data?.error || err.response?.data?.message || "Something went wrong. Try again.";
-  toast.error(errorMsg);
-}
-
+      // Reset state and form
+      setUsername("");
+      setPreviousEmail("");
+      setEmail("");
+      setOldPassword("");
+      setNewPassword("");
+      setActiveField(null);
+    } catch (err) {
+      const errorMsg =
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        "Something went wrong. Try again.";
+      toast.error(errorMsg);
+    }
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white shadow-md rounded-md mt-10">
+    <div className="max-w-md mx-auto px-6 bg-white shadow-md rounded-md mt-10">
+      <div className="mb-10">
+        <FaArrowLeftLong
+          className="text-2xl cursor-pointer text-gray-700 hover:text-blue-500 transition-colors duration-200 hover:scale-110 transform"
+          onClick={() => navigate("/Profile")}
+        />
+      </div>
       <h2 className="text-2xl font-bold mb-6 text-center">Edit Profile</h2>
 
       <div className="flex flex-col gap-4 mb-6">

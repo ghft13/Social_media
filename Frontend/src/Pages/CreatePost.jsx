@@ -3,6 +3,7 @@ import { IoCloseSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../Context/AuthContext";
+import { CATEGORIES } from "../Utils/Categories";
 function CreatePost() {
   const {
     title,
@@ -15,8 +16,12 @@ function CreatePost() {
     setUploadingPost,
     handleFileSelect,
     handlePost,
+    category,
+    setCategory
   } = useAuth();
   const navigate = useNavigate();
+
+
 
   return (
     <div className="flex min-h-screen flex-col justify-between bg-neutral-50 overflow-x-hidden">
@@ -89,6 +94,23 @@ function CreatePost() {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="flex max-w-[480px] px-4 py-3">
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="w-full rounded-xl bg-[#ededed] h-14 px-4 text-base text-[#141414] focus:outline-none"
+        >
+          <option value="" disabled>
+            Select category
+          </option>
+          {CATEGORIES.map((c, i) => (
+            <option key={i} value={c.value}>
+              {c.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="px-4 py-3">
