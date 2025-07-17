@@ -109,7 +109,7 @@ function PostCard({ post, userId, HandleDeletePost, activeTab }) {
                   />
                 ) : file.mimetype.startsWith("video/") ? (
                   <video controls className="w-full h-[400px] object-cover">
-                    <source src={mediaURL} type={file.mimetype} />
+                    <source src={mediaURL} type={file.mimetype}/>
                   </video>
                 ) : (
                   <p>Unsupported</p>

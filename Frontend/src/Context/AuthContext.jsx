@@ -223,7 +223,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     const formData = new FormData();
-    file.forEach((f) => formData.append("files", f)); // ✅ use .forEach
+    file.forEach((f) => formData.append("files", f));
 
     formData.append("title", title);
     formData.append("desc", desc);
@@ -242,11 +242,18 @@ export const AuthProvider = ({ children }) => {
 
       setTitle("");
       setFile("");
-      setDesc("")
+      setDesc("");
 
       navigate("/");
     } catch (err) {
-      toast.error("Upload failed. Please try again.");
+      if (err.response && err.response.data) {
+        const { error, tip, message } = err.response.data;
+        if (error) toast.error(error);
+       else if (tip) toast.info(tip);
+         else if (message) toast.info(message);
+      } else {
+        toast.error("Upload failed. Please try again.");
+      }
     } finally {
       setUploadingPost(false);
     }
