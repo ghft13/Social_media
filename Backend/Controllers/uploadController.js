@@ -34,7 +34,7 @@ const extractPublicId = (url) => {
 
 export const handleUpload = async (req, res) => {
   try {
-    const { title, desc } = req.body;
+    const { title, desc, category } = req.body;
     const files = req.files;
 
     if (!files || files.length === 0) {
@@ -113,6 +113,7 @@ export const handleUpload = async (req, res) => {
       files: fileData,
       user: req.user.userId,
       username: req.user.username,
+      category,
     });
 
     await newUpload.save();
@@ -125,8 +126,8 @@ export const handleUpload = async (req, res) => {
       message: "Post uploaded successfully with multiple files",
       data: newUpload,
     });
-   } catch (error) {
-  //   //console.error("Upload error:", error);
+  } catch (error) {
+    //   //console.error("Upload error:", error);
     res.status(500).json({ error: "Server error while uploading" });
   }
 };
