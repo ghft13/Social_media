@@ -125,8 +125,8 @@ export const handleUpload = async (req, res) => {
       message: "Post uploaded successfully with multiple files",
       data: newUpload,
     });
-  } catch (error) {
-    console.error("Upload error:", error);
+   } catch (error) {
+  //   //console.error("Upload error:", error);
     res.status(500).json({ error: "Server error while uploading" });
   }
 };
@@ -138,7 +138,7 @@ export const getUploads = async (req, res) => {
       .populate("likes", "username"); // Populate likes with usernames
     res.status(200).json({ uploads });
   } catch (error) {
-    console.error("❌ Error in getUploads:", error);
+    //console.error("❌ Error in getUploads:", error);
     res.status(500).json({ error: "Failed to fetch uploads" });
   }
 };
@@ -184,7 +184,7 @@ export const GetLike = async (req, res) => {
       likedBy: populatedPost.likes,
     });
   } catch (err) {
-    console.error("Like error:", err);
+    //console.error("Like error:", err);
     res.status(500).json({ error: "Something went wrong" });
   }
 };
@@ -218,7 +218,7 @@ export const getProfileData = async (req, res) => {
       uploads,
     });
   } catch (err) {
-    console.error("Profile fetch error:", err);
+    //console.error("Profile fetch error:", err);
     res.status(500).json({ message: "Something went wrong." });
   }
 };
