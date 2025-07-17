@@ -43,48 +43,69 @@ export const handleUpload = async (req, res) => {
 
     const isProduction = process.env.NODE_ENV === "production";
 
-    // ✅ Validate video durations
+    const fileData = [];
+
     for (const file of files) {
       const isVideo = file.mimetype.startsWith("video/");
-      if (!isVideo) continue;
 
-      if (isProduction) {
-        const public_id = extractPublicId(file.path);
-        const duration = await getVideoDurationCloudinary(public_id);
+      // ✅ Check duration based on environment
+      if (isVideo) {
+        if (isProduction) {
+          const public_id = extractPublicId(file.path);
+          const duration = await getVideoDurationCloudinary(public_id);
 
-        if (duration > 30) {
-          await cloudinary.uploader.destroy(public_id, {
+          if (duration > 30) {
+            await cloudinary.uploader.destroy(public_id, {
+              resource_type: "video",
+            });
+            return res.status(400).json({
+              error: `The video "${file.originalname}" is ${Math.round(
+                duration
+              )}s. Limit is 30s.`,
+              tip: "Please upload a shorter video.",
+            });
+          }
+
+          // ✅ Get correct cloudinary secure_url for videos in production
+          const uploaded = await cloudinary.api.resource(public_id, {
             resource_type: "video",
           });
-          return res.status(400).json({
-            error: `The video "${file.originalname}" is ${Math.round(
-              duration
-            )} seconds long. Videos must be 30 seconds or less.`,
-            tip: "Please upload a shorter video.",
+
+          fileData.push({
+            filename: file.originalname,
+            path: uploaded.secure_url, // ✅ Cloud URL for production
+            mimetype: file.mimetype,
+          });
+        } else {
+          // ✅ Development: check local file duration
+          const duration = await getVideoDurationLocal(file.path);
+          if (duration > 30) {
+            fs.unlinkSync(file.path);
+            return res.status(400).json({
+              error: `The video "${file.originalname}" is ${Math.round(
+                duration
+              )}s. Limit is 30s.`,
+              tip: "Please upload a shorter video.",
+            });
+          }
+
+          fileData.push({
+            filename: file.filename,
+            path: `uploads/${file.filename}`.replace(/\\/g, "/"), // local path
+            mimetype: file.mimetype,
           });
         }
       } else {
-        const duration = await getVideoDurationLocal(file.path);
-        if (duration > 30) {
-          fs.unlinkSync(file.path);
-          return res.status(400).json({
-            error: `The video "${file.originalname}" is ${Math.round(
-              duration
-            )} seconds long. Videos must be 30 seconds or less.`,
-            tip: "Please upload a shorter video.",
-          });
-        }
+        // ✅ For non-video files (images or others)
+        fileData.push({
+          filename: file.filename,
+          path: isProduction
+            ? file.path // assumes cloud URL already if image is uploaded to cloud
+            : `uploads/${file.filename}`.replace(/\\/g, "/"),
+          mimetype: file.mimetype,
+        });
       }
     }
-
-    const fileData = files.map((file) => ({
-      filename: file.filename,
-     path: `uploads/${file.filename}`.replace(/\\/g, "/"),
-       
-      mimetype: file.mimetype,
-    }));
-
-    console.log(fileData)
 
     const newUpload = new UploadModel({
       title,
