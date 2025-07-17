@@ -4,22 +4,37 @@ import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
 
-
+// Get __dirname in ES module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const localStorage = multer.diskStorage({
+// 🔹 Local disk storage setup
+export const localStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     const uploadPath = path.join(__dirname, "../uploads");
-    fs.mkdirSync(uploadPath, { recursive: true }); // make sure folder exists
+    fs.mkdirSync(uploadPath, { recursive: true });
     cb(null, uploadPath);
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + "-" + file.originalname);
+    const ext = path.extname(file.originalname);
+    const base = path.basename(file.originalname, ext);
+    const safeName = base
+      .replace(/[^\w\-]/g, "_") // replace all unsafe chars (e.g. #, &, etc)
+      .substring(0, 100); // optional: truncate long names
+
+    cb(
+      null,
+      Date.now() +
+        "-" +
+        Math.floor(Math.random() * 1000000000) +
+        "-" +
+        safeName +
+        ext
+    );
   },
 });
 
+// 🔹 Default upload middleware
 const upload = multer({
   storage:
     process.env.NODE_ENV === "production" ? cloudinaryStorage : localStorage,

@@ -1,5 +1,6 @@
-import { v2 as cloudinary } from 'cloudinary';
-import { CloudinaryStorage } from 'multer-storage-cloudinary';
+// cloudinary.js
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -10,8 +11,9 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: 'chillplay_uploads', // 🔸 folder in Cloudinary
-    allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'mp4'],
+    folder: "chillplay_uploads",
+    allowed_formats: ["jpg", "png", "jpeg", "webp", "mp4"],
+    resource_type: "auto",
   },
 });
 

@@ -19,6 +19,8 @@ if (process.env.NODE_ENV === "development") {
   app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 }
 
+
+
 app.use(
   cors({
     origin: ["http://localhost:5173",
