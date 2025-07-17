@@ -13,7 +13,6 @@ import "swiper/css/navigation";
 function PostCard({ post, userId, HandleDeletePost, activeTab }) {
   const Backend_Url = import.meta.env.VITE_BACKEND_URL;
 
-  
   // ✅ Combine Cloudinary & local URL handling
 
   const { currentUser } = useAuth();
@@ -109,7 +108,15 @@ function PostCard({ post, userId, HandleDeletePost, activeTab }) {
                   />
                 ) : file.mimetype.startsWith("video/") ? (
                   <video controls className="w-full h-[400px] object-cover">
-                    <source src={mediaURL} type={file.mimetype}/>
+                    <source
+                      src={mediaURL}
+                      type={file.mimetype}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      controls
+                    />
                   </video>
                 ) : (
                   <p>Unsupported</p>
