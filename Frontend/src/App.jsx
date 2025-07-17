@@ -8,6 +8,7 @@ import Profile from "./Pages/Profile";
 import PrivateRoute from "./Components/PrivateRoute";
 import Terms from "./Pages/Terms";
 import Privacy from "./Pages/Privacy";
+import Edit from "./Pages/Edit";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./Context/AuthContext";
 
@@ -37,6 +38,7 @@ function App() {
             <Route path="/Terms" element={<Terms />}></Route>
             <Route path="/Privacy" element={<Privacy />}></Route>
             <Route path="/Community" element={<CommunityRules />}></Route>
+            <Route path="/Edit" element={<Edit />}></Route>
 
             <Route
               path="/Profile"

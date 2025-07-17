@@ -59,7 +59,7 @@ function PostCard({ post, userId, HandleDeletePost, activeTab }) {
       setLikeCount(res.data.totalLikes);
       setLikedBy(res.data.likedBy);
     } catch (err) {
-      console.error("Error liking post:", err);
+      //console.error("Error liking post:", err);
     }
   };
 

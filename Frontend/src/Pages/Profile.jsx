@@ -42,7 +42,7 @@ function Profile() {
       fetchProfileData();
     } catch (error) {
       toast.error("Failed to update profile picture");
-      console.error("Error:", error);
+      //console.error("Error:", error);
     } finally {
       setLoadingDp(false);
     }
@@ -62,7 +62,7 @@ function Profile() {
           className="text-2xl cursor-pointer"
           onClick={() => navigate("/")}
         />
-        <button className="bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800 text-sm font-medium">
+        <button onClick={()=>navigate('/Edit')} className="bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800 text-sm font-medium">
           Edit Profile
         </button>
       </div>

@@ -144,7 +144,7 @@ export const AuthProvider = ({ children }) => {
 
   function hideMenu() {
     if (!menuRef.current || !cancelRef.current || !menuiconRef.current) return;
-    console.log("remove");
+    //console.log("remove");
     gsap.to(menuRef.current, {
       duration: 0.5,
       left: "110%",
@@ -181,7 +181,7 @@ export const AuthProvider = ({ children }) => {
         navigate("/login");
       }
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
   }
 
@@ -192,7 +192,7 @@ export const AuthProvider = ({ children }) => {
         setUploads(res.data.uploads);
       }
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
   }
 
@@ -204,7 +204,7 @@ export const AuthProvider = ({ children }) => {
       setuser(res.data.user);
       setUploads(res.data.uploads);
     } catch (err) {
-      console.error("Error fetching profile data:", err);
+      //console.error("Error fetching profile data:", err);
     }
   };
 
