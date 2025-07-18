@@ -9,6 +9,7 @@ import PrivateRoute from "./Components/PrivateRoute";
 import Terms from "./Pages/Terms";
 import Privacy from "./Pages/Privacy";
 import Edit from "./Pages/Edit";
+
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./Context/AuthContext";
 
@@ -17,6 +18,7 @@ import "react-toastify/dist/ReactToastify.css";
 import CreatePost from "./Pages/CreatePost";
 import HomeFallback from "./Components/HomeFallback";
 import CommunityRules from "./Pages/CommunityRules";
+import Analytics from "./Pages/Analytics";
 
 function App() {
   return (
@@ -39,6 +41,7 @@ function App() {
             <Route path="/Privacy" element={<Privacy />}></Route>
             <Route path="/Community" element={<CommunityRules />}></Route>
             <Route path="/Edit" element={<Edit />}></Route>
+            <Route path="/Analytics" element={<Analytics />}></Route>
 
             <Route
               path="/Profile"
@@ -54,6 +57,15 @@ function App() {
               element={
                 <PrivateRoute>
                   <CreatePost />
+                </PrivateRoute>
+              }
+            ></Route>
+
+            <Route
+              path="/Analytics"
+              element={
+                <PrivateRoute>
+                  <Analytics />
                 </PrivateRoute>
               }
             ></Route>

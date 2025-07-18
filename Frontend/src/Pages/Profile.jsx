@@ -173,10 +173,8 @@ function Profile() {
 
           {/* Posts Content */}
           {displayedPosts.length === 0 ? (
-            <div className="text-center py-16">
-              <div className="text-8xl mb-6">
-                {activeTab === "liked" ? "💝" : "📝"}
-              </div>
+            <div clas sName="text-center py-16">
+              
               <p className="text-gray-500 text-lg font-medium mb-4">
                 {activeTab === "liked" ? "No liked posts yet" : "No posts created yet"}
               </p>

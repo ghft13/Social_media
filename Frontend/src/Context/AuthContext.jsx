@@ -138,7 +138,7 @@ export const AuthProvider = ({ children }) => {
 
     gsap.to(menuRef.current, {
       duration: 0.5,
-      left: "2%",
+      left: "1%",
       ease: "power2.out",
     });
   }

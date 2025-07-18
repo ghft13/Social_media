@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { CiHeart } from "react-icons/ci";
 import { FaRegHeart } from "react-icons/fa6";
 import { FaHeart } from "react-icons/fa6";
@@ -7,13 +7,14 @@ import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "../Context/AuthContext";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
+import Analytics from "../Pages/Analytics";
 import "swiper/css";
 import "swiper/css/navigation";
+import { sendAnalytics } from "../Utils/analytics";
+import { usePostAnalytics } from "../../Hooks/usePostAnalytics";
 
 function PostCard({ post, userId, HandleDeletePost, activeTab }) {
   const Backend_Url = import.meta.env.VITE_BACKEND_URL;
-
-  // ✅ Combine Cloudinary & local URL handling
 
   const { currentUser } = useAuth();
   const [isLiked, SetIsLiked] = useState(false);
@@ -21,6 +22,17 @@ function PostCard({ post, userId, HandleDeletePost, activeTab }) {
   const [likeCount, setLikeCount] = useState(0);
   const [likes, setLikes] = useState(false);
   const [showLikesModal, setShowLikesModal] = useState(false);
+  const ref = useRef();
+  const [startTime, setStartTime] = useState(null);
+  const [hasViewed, setHasViewed] = useState(false);
+
+  usePostAnalytics({
+    ref,
+    postId: post._id,
+    postOwnerId: post.user,
+    currentUser,
+    Backend_Url,
+  });
 
   useEffect(() => {
     document.body.style.overflow = showLikesModal ? "hidden" : "auto";
@@ -64,138 +76,201 @@ function PostCard({ post, userId, HandleDeletePost, activeTab }) {
   };
 
   return (
-    <div className="w-full flex justify-center mt-4">
-      <div className="w-full max-w-md rounded-xl shadow-lg bg-white overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-2">
-          <h1 className="text-sm font-semibold text-gray-800">
-            {post.username}
-          </h1>
-          <p className="text-xs text-gray-500">
-            {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
-          </p>
-        </div>
-        {/* Carousel for multiple media files */}
-        <Swiper
-          spaceBetween={10}
-          slidesPerView={1}
-          navigation={{
-            nextEl: ".custom-next",
-            prevEl: ".custom-prev",
-          }}
-          modules={[Navigation]}
-          className="w-full h-[400px] relative  "
+    <div className="w-full flex justify-center px-4 py-2">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]">
+        {/* Header Section */}
+        <div
+          ref={ref}
+          className="flex items-center justify-between px-5 py-4 border-b border-gray-50"
         >
-          <div className="custom-prev text-2xl   absolute left-2 top-1/2 transform -translate-y-1/2 z-50  text-black rounded-full p-2 shadow-lg cursor-pointer">
-            ←
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-sm">
+                {post.username.charAt(0).toUpperCase()}
+              </span>
+            </div>
+            <div>
+              <h1 className="text-sm font-bold text-gray-900">
+                {post.username}
+              </h1>
+              <p className="text-xs text-gray-500">
+                {formatDistanceToNow(new Date(post.createdAt), {
+                  addSuffix: true,
+                })}
+              </p>
+            </div>
           </div>
-          <div className="custom-next  text-2xl absolute right-2 top-1/2 transform -translate-y-1/2 z-50  text-black rounded-full p-2 shadow-lg cursor-pointer">
-            →
+          <div className="flex items-center space-x-2 text-gray-400">
+            <span className="text-xs font-medium">{post.views || 0} Views</span>
           </div>
+        </div>
 
-          {post.files.map((file, index) => {
-            const mediaURL = file.path.startsWith("http")
-              ? file.path
-              : `${Backend_Url}/${file.path}`;
+        {/* Media Carousel */}
+        <div className="relative bg-gray-50">
+          <Swiper
+            spaceBetween={0}
+            slidesPerView={1}
+            navigation={{
+              nextEl: ".custom-next",
+              prevEl: ".custom-prev",
+            }}
+            modules={[Navigation]}
+            className="w-full h-[400px] relative"
+          >
+            <div className="custom-prev absolute left-3 top-1/2 transform -translate-y-1/2 z-50 bg-white/80 backdrop-blur-sm hover:bg-white text-gray-700 rounded-full w-10 h-10 flex items-center justify-center shadow-lg cursor-pointer transition-all duration-200 hover:scale-110">
+              <span className="text-lg font-bold">‹</span>
+            </div>
+            <div className="custom-next absolute right-3 top-1/2 transform -translate-y-1/2 z-50 bg-white/80 backdrop-blur-sm hover:bg-white text-gray-700 rounded-full w-10 h-10 flex items-center justify-center shadow-lg cursor-pointer transition-all duration-200 hover:scale-110">
+              <span className="text-lg font-bold">›</span>
+            </div>
 
-            return (
-              <SwiperSlide key={index}>
-                {file.mimetype.startsWith("image/") ? (
-                  <img
-                    src={mediaURL}
-                    alt={`media-${index}`}
-                    className="w-full h-[400px] object-cover"
-                  />
-                ) : file.mimetype.startsWith("video/") ? (
-                  <video controls className="w-full h-[400px] object-cover">
-                    <source
+            {post.files.map((file, index) => {
+              const mediaURL = file.path.startsWith("http")
+                ? file.path
+                : `${Backend_Url}/${file.path}`;
+
+              return (
+                <SwiperSlide key={index}>
+                  {file.mimetype.startsWith("image/") ? (
+                    <img
                       src={mediaURL}
-                      type={file.mimetype}
+                      alt={`media-${index}`}
+                      className="w-full h-[400px] object-cover"
+                    />
+                  ) : file.mimetype.startsWith("video/") ? (
+                    <video
+                      controls
+                      className="w-full h-[400px] object-cover"
                       autoPlay
                       muted
                       loop
                       playsInline
-                      controls
-                    />
-                  </video>
-                ) : (
-                  <p>Unsupported</p>
-                )}
-              </SwiperSlide>
-            );
-          })}
-        </Swiper>
+                    >
+                      <source src={mediaURL} type={file.mimetype} />
+                    </video>
+                  ) : (
+                    <div className="w-full h-[400px] flex items-center justify-center bg-gray-100">
+                      <p className="text-gray-500">Unsupported media type</p>
+                    </div>
+                  )}
+                </SwiperSlide>
+              );
+            })}
+          </Swiper>
 
-        {/* Footer */}
+          {/* Media Counter */}
+          {post.files.length > 1 && (
+            <div className="absolute bottom-4 right-4 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
+              1 / {post.files.length}
+            </div>
+          )}
+        </div>
 
-        <div className="px-4 py-3">
-          <button
-            onClick={handleLike}
-            className={`text-2xl ${likes ? "text-red-500" : "text-gray-500"}`}
-          >
-            {likes ? <FaHeart /> : <FaRegHeart />}
-          </button>
+        {/* Content Section */}
+        <div className="px-5 py-4 space-y-3">
+          {/* Like Button and Count */}
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={handleLike}
+              className={`flex items-center space-x-2 transition-all duration-200 ${
+                likes
+                  ? "text-red-500 hover:text-red-600"
+                  : "text-gray-500 hover:text-red-400"
+              }`}
+            >
+              <div className="text-2xl">
+                {likes ? <FaHeart /> : <FaRegHeart />}
+              </div>
+            </button>
+            <p className="text-sm font-semibold text-gray-800">
+              {likeCount} {likeCount !== 1 ? "likes" : "like"}
+            </p>
+          </div>
 
-          <p className="text-sm font-semibold mt-1 text-gray-800">
-            {likeCount} Like{likeCount !== 1 && "s"}
-          </p>
+          {/* Post Content */}
+          <div className="space-y-2">
+            <p className="text-sm leading-relaxed text-gray-800">
+              <span className="font-semibold">{post.username}</span>{" "}
+              {post.title && (
+                <span className="font-medium">{post.title} - </span>
+              )}
+              {post.desc}
+            </p>
 
-          <p className="text-sm mt-2">
-            <span className="font-semibold">{post.username}</span>{" "}
-            {post.title && <span>{post.title} - </span>}
-            {post.desc}
-          </p>
+            {/* Liked By Section */}
+            <p
+              className="text-xs text-gray-500 cursor-pointer hover:text-gray-700 transition-colors duration-200"
+              onClick={() => setShowLikesModal(true)}
+            >
+              Liked by{" "}
+              {likedBy.length > 0
+                ? likedBy
+                    .slice(0, 3)
+                    .map((user) => user.username)
+                    .join(", ") +
+                  (likedBy.length > 3
+                    ? ` and ${likedBy.length - 3} others`
+                    : "")
+                : "no one yet"}
+            </p>
+          </div>
 
-          <p
-            className="text-xs text-gray-500 mt-1 cursor-pointer hover:underline"
-            onClick={() => setShowLikesModal(true)}
-          >
-            Liked by{" "}
-            {likedBy.length > 0
-              ? likedBy
-                  .slice(0, 6)
-                  .map((user) => user.username)
-                  .join(", ") + (likedBy.length > 6 ? "..." : "")
-              : "No one yet"}
-          </p>
+          {/* Delete Button */}
+          {activeTab === "created" && (
+            <div className="pt-3 border-t border-gray-100">
+              <button
+                onClick={() => HandleDeletePost(post._id)}
+                className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-3 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl"
+              >
+                Delete Post
+              </button>
+            </div>
+          )}
+        </div>
 
-          {showLikesModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-              <div className="bg-white rounded-xl w-80 max-h-96 overflow-y-auto p-4 shadow-lg relative">
-                <h2 className="text-lg font-bold mb-2">Liked by</h2>
+        {/* Likes Modal */}
+        {showLikesModal && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+            <div className="bg-white rounded-2xl w-full max-w-sm max-h-96 overflow-hidden shadow-2xl">
+              <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between">
+                <h2 className="text-lg font-bold text-gray-900">Liked by</h2>
                 <button
-                  className="absolute top-2 right-2 text-gray-500 hover:text-red-500"
+                  className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
                   onClick={() => setShowLikesModal(false)}
                 >
-                  ✖
+                  <span className="text-xl">×</span>
                 </button>
+              </div>
+              <div className="overflow-y-auto max-h-80">
                 {likedBy.length > 0 ? (
-                  likedBy.map((user) => (
+                  likedBy.map((user, index) => (
                     <div
                       key={user._id}
-                      className="p-2 border-b border-gray-200 text-sm text-gray-700"
+                      className={`flex items-center space-x-3 px-6 py-3 hover:bg-gray-50 transition-colors duration-200 ${
+                        index !== likedBy.length - 1
+                          ? "border-b border-gray-100"
+                          : ""
+                      }`}
                     >
-                      {user.username}
+                      <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <span className="text-white font-semibold text-xs">
+                          {user.username.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <span className="text-sm font-medium text-gray-700">
+                        {user.username}
+                      </span>
                     </div>
                   ))
                 ) : (
-                  <p>No likes yet</p>
+                  <div className="px-6 py-8 text-center text-gray-500">
+                    No likes yet
+                  </div>
                 )}
               </div>
             </div>
-          )}
-
-          <div className="flex justify-center items-center ">
-            {activeTab === "created" && (
-              <button
-                onClick={() => HandleDeletePost(post._id)}
-                className="mt-6 w-[50%] bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-full flex items-center justify-center gap-2 shadow-md transition duration-300 ease-in-out "
-              >
-                Delete
-              </button>
-            )}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
