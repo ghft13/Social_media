@@ -8,6 +8,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import uploadRoutes from "./Routes/UploadRoutes.js"; // Ensure this is the correct import path
 import ChangeDpRoutes from "./Routes/ChangeDpRoutes.js"; // Ensure this is the correct import path
+import AnalyticsRoutes from "./Routes/AnalyticsRoutes.js"
 dotenv.config();
 
 const app = express();
@@ -39,6 +40,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", AuthRoutes);
 app.use("/api/posts", uploadRoutes);
 app.use("/api/user", ChangeDpRoutes);
+app.use("/api/posts/analytics",AnalyticsRoutes);
 
 const PORT = process.env.PORT || 5000;
 
