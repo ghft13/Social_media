@@ -3,8 +3,10 @@ import PostCard from "../Components/PostCard";
 import { useAuth } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeftLong} from "react-icons/fa6";
+
 const Analytics = () => {
 
+ 
    const navigate = useNavigate();
   const { uploads, currentUser, getAllPost } = useAuth();
  
@@ -158,7 +160,7 @@ const Analytics = () => {
                 <p className="text-gray-500 mb-6">
                   Create your first post to start tracking analytics
                 </p>
-                <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200">
+                <button onClick={()=>navigate('/Createpost')} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200">
                   Create Post
                 </button>
               </div>

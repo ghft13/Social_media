@@ -1,9 +1,18 @@
 import React from "react";
 import { useAuth } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { FaSpinner } from "react-icons/fa";
+import { useState } from "react";
+
 function Login() {
   const navigate = useNavigate();
+  const [clicked, setClicked] = useState(false);
+
+  const handleClick = () => {
+    if (!buttonLoading) {
+      setClicked(true);
+      setTimeout(() => setClicked(false), 150); // scale back after 150ms
+    }
+  };
   const {
     setloginEmail,
     setloginPassword,
@@ -13,9 +22,6 @@ function Login() {
     buttonLoading,
     setButtonLoading,
   } = useAuth();
-
-
-
 
   const handlesubmit = async (e) => {
     e.preventDefault();
@@ -60,15 +66,20 @@ function Login() {
         <button
           type="submit"
           disabled={buttonLoading}
-          className={`w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition ${buttonLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          onClick={handleClick}
+          className={`
+        w-full bg-blue-600 text-white py-2 rounded 
+        transition duration-150 ease-in-out 
+        hover:bg-blue-700 
+        ${buttonLoading ? "opacity-50 cursor-not-allowed" : ""}
+        ${clicked ? "scale-95" : ""}
+      `}
         >
-         {
-          buttonLoading ? "Logging in..." : "Login"
-         }
+          {buttonLoading ? "Sending Magic Link..." : "Send A Magic Link"}
         </button>
 
         <button
-          onClick={()=>navigate('/')}
+          onClick={() => navigate("/")}
           type="button"
           className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition mt-2"
         >

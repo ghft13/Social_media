@@ -4,6 +4,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useRef } from "react";
 import gsap from "gsap";
+import { supabase } from "../Utils/Supbase";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -37,91 +38,109 @@ export const AuthProvider = ({ children }) => {
   const menuiconRef = useRef(null);
   const homeRef = useRef(null);
 
-  const handlesignup = async () => {
-    setButtonLoading(true);
-    try {
-      const res = await axios.post(
-        `${Backend_URL}/api/auth/signup`,
-        {
-          email,
-          username,
-          password,
-        },
-        { withCredentials: true }
-      );
+const handlesignup = async () => {
+  setButtonLoading(true);
+  try {
+    const res = await axios.post(
+      `${Backend_URL}/api/auth/signup`,
+      {
+        email,
+        username,
+        password,
+      },
+      { withCredentials: true }
+    );
 
+    if (res.status == 201) {
       localStorage.setItem("User", JSON.stringify(res.data.user));
       setuser(res.data.user);
-
-      if (res.status == 201) {
-        toast.success(res.data.message);
-        setemail("");
-        setusername("");
-        setpassword("");
-        await checkAuth();
-        navigate("/");
-      }
-    } catch (err) {
-      setButtonLoading(false);
-      const errorMessage =
-        err.response?.data?.message ||
-        "Something went wrong. Please try again.";
-      toast.error(errorMessage);
+      
+      toast.success(res.data.message);
+      setemail("");
+      setusername("");
+      setpassword("");
+      
+      await checkAuth();
+      navigate("/login");
     }
-  };
+  } catch (err) {
+    const errorMessage =
+      err.response?.data?.message ||
+      "Something went wrong. Please try again.";
+    toast.error(errorMessage);
+  } finally {
+    setButtonLoading(false); // ✅ Always reset loading state
+  }
+};
 
-  const handlelogin = async () => {
-    try {
-      const res = await axios.post(
-        `${Backend_URL}/api/auth/login`,
-        {
-          loginEmail,
-          loginPassword,
-        },
-        { withCredentials: true }
-      );
+const handlelogin = async () => {
+  try {
+    const res = await axios.post(
+      `${Backend_URL}/api/auth/login`,
+      {
+        loginEmail,
+        loginPassword,
+      },
+      { withCredentials: true }
+    );
+
+    if (res.status === 200) {
       localStorage.setItem("User", JSON.stringify(res.data.user));
       setuser(res.data.user);
+      setisAuthenticated(true);
 
-      if (res.status == 200) {
-        toast.success(res.data.message);
-        setloginEmail("");
-        setloginPassword("");
-        setisAuthenticated(true);
-        await checkAuth();
-        navigate("/");
-      }
-    } catch (err) {
-      toast.error(
-        err.response?.data?.message || "Login failed. Please try again."
-      );
-      const errorMessage =
-        err.response?.data?.message || "Something went wrong while logging in.";
-    }
-  };
-
-  const checkAuth = async () => {
-    try {
-      const res = await axios.get(`${Backend_URL}/api/auth/verify`, {
-        withCredentials: true,
+      // ✅ Send Supabase magic link AFTER successful login
+      const { error } = await supabase.auth.signInWithOtp({
+        email: res.data.user.email,
+        options: {
+          shouldCreateUser: false, 
+          emailRedirectTo: window.location.origin,
+        },
       });
 
-      setcurrentUser(res.data.user);
-
-      if (res.data.success) {
-        setisAuthenticated(true);
+      if (error) {
+      //  console.error("Supabase magic link error:", error.message);
+        toast.error("Could not send magic link. Please try again.");
       } else {
-        setisAuthenticated(false);
+        toast.success("Magic link sent to your email! Check your inbox.");
+        setloginEmail("");
+        setloginPassword("");
       }
-    } catch (err) {
-      const errorMessage =
-        err.response?.data?.message ||
-        "Something went wrong while checking authentication.";
-      setisAuthenticated(false);
-    } finally {
-      setloading(false);
+
+      await checkAuth();
     }
-  };
+  } catch (err) {
+    const errorMessage =
+      err.response?.data?.message || "Login failed. Please try again.";
+    toast.error(errorMessage);
+  //  console.error("Login error:", errorMessage);
+  }
+};
+
+const checkAuth = async () => {
+  try {
+    const res = await axios.get(`${Backend_URL}/api/auth/verify`, {
+      withCredentials: true,
+    });
+
+    setcurrentUser(res.data.user);
+
+    if (res.data.success) {
+      setisAuthenticated(true);
+    } else {
+      setisAuthenticated(false);
+    }
+  } catch (err) {
+    const errorMessage =
+      err.response?.data?.message ||
+      "Something went wrong while checking authentication.";
+    console.error("Auth check error:", errorMessage);
+    setisAuthenticated(false);
+  } finally {
+    setloading(false);
+  }
+};
+
 
   function showmenu() {
     if (!menuRef.current || !cancelRef.current || !menuiconRef.current) return;

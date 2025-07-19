@@ -1,5 +1,3 @@
-
-
 // src/Pages/Home.jsx
 import React, { useEffect, useRef } from "react";
 import { IoMenu, IoCloseCircleSharp } from "react-icons/io5";
@@ -9,12 +7,14 @@ import { useAuth } from "../Context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import PostCard from "../Components/PostCard";
 import { gsap } from "gsap";
+import { supabase } from "../Utils/Supbase";
+import { toast } from "react-toastify"; // Add this import
 
 function Home() {
   const navRef = useRef(null);
   const linksRef = useRef([]);
   const buttonsRef = useRef([]);
-  const { 
+  const {
     menuRef,
     cancelRef,
     menuiconRef,
@@ -30,6 +30,63 @@ function Home() {
   const userId = currentUser?.userId;
 
   useEffect(() => {
+    const handleMagicLinkAuth = async () => {
+      try {
+        // Check for auth hash or search params in URL
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const searchParams = new URLSearchParams(window.location.search);
+        
+        const accessToken = hashParams.get('access_token') || searchParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token') || searchParams.get('refresh_token');
+        
+        if (accessToken) {
+        //  console.log('Magic link detected, processing authentication...');
+          
+          // Set the session manually
+          const { data, error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken
+          });
+
+          if (error) {
+        //    console.error('Magic link auth error:', error);
+            toast.error('Authentication failed: ' + error.message);
+          } else if (data.session) {
+         //   console.log('User authenticated via magic link:', data.session.user.email);
+            toast.success('Successfully authenticated via magic link!');
+            
+            // Clean up the URL completely - this prevents new tab opening
+            const cleanUrl = window.location.origin + window.location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
+            
+            // Force a page refresh to ensure clean state
+            setTimeout(() => {
+              window.location.replace(cleanUrl);
+            }, 1000);
+          }
+        }
+      } catch (err) {
+        console.error('Magic link handling error:', err);
+        toast.error('Authentication error occurred');
+      }
+    };
+
+    // Run immediately when component mounts
+    handleMagicLinkAuth();
+    
+    // Also listen for hash changes (in case the magic link loads after component mount)
+    const handleHashChange = () => {
+      handleMagicLinkAuth();
+    };
+    
+    window.addEventListener('hashchange', handleHashChange);
+    
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, []);
+
+  useEffect(() => {
     getAllPost();
   }, [getAllPost]);
 
@@ -43,12 +100,28 @@ function Home() {
       gsap.fromTo(
         linksRef.current,
         { opacity: 0, x: -30, rotateY: -15 },
-        { opacity: 1, x: 0, rotateY: 0, duration: 0.6, stagger: 0.1, delay: 0.3, ease: "power2.out" }
+        {
+          opacity: 1,
+          x: 0,
+          rotateY: 0,
+          duration: 0.6,
+          stagger: 0.1,
+          delay: 0.3,
+          ease: "power2.out",
+        }
       );
       gsap.fromTo(
         buttonsRef.current,
         { opacity: 0, y: 20, scale: 0.8 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.1, delay: 0.6, ease: "back.out(1.7)" }
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.5,
+          stagger: 0.1,
+          delay: 0.6,
+          ease: "back.out(1.7)",
+        }
       );
     }, navRef);
 
@@ -81,36 +154,56 @@ function Home() {
   };
 
   return (
-    <div className="home h-screen w-screen px-2 py-2 overflow-y-auto" ref={homeRef}>
+    <div
+      className="home h-screen w-screen px-2 py-2 overflow-y-auto"
+      ref={homeRef}
+    >
       {/* Top bar */}
       <div className="flex justify-between items-center relative">
         <h1 className="text-2xl font-bold">ChillPlay</h1>
         <IoMenu ref={menuiconRef} className="text-2xl" onClick={showmenu} />
-        <IoCloseCircleSharp ref={cancelRef} onClick={hideMenu} className="text-3xl absolute right-0 hidden cursor-pointer z-50" />
+        <IoCloseCircleSharp
+          ref={cancelRef}
+          onClick={hideMenu}
+          className="text-3xl absolute right-0 hidden cursor-pointer z-50"
+        />
       </div>
 
       {/* Main nav icons */}
       <div className="border-t border-[#e7edf3] bg-slate-50 px-4 pt-2 pb-3 flex justify-between text-sm font-medium">
-        <div className="flex flex-col items-center text-black" onClick={() => navigate('/') }>
+        <div
+          className="flex flex-col items-center text-black"
+          onClick={() => navigate("/")}
+        >
           <FaHome />
           <span>Home</span>
         </div>
-        <div className="flex flex-col items-center text-gray-500" onClick={() => navigate('/profile')}>
+        <div
+          className="flex flex-col items-center text-gray-500"
+          onClick={() => navigate("/profile")}
+        >
           <FaUser />
           <span>User</span>
         </div>
-        <div className="flex flex-col items-center text-gray-500" onClick={() => navigate('/explore')}>
+        <div
+          className="flex flex-col items-center text-gray-500"
+          onClick={() => navigate("/explore")}
+        >
           <FaSearch />
           <span>Explore</span>
         </div>
       </div>
 
       {/* Sidebar menu */}
-      <div ref={menuRef} className="flex hidden justify-center items-center relative h-screen -top-20 left-[110%] w-screen">
+      <div
+        ref={menuRef}
+        className="flex hidden justify-center items-center relative h-screen -top-20 left-[110%] w-screen"
+      >
         <div className="flex items-center justify-center min-h-screen p-4 w-full">
-          <div ref={navRef} className="bg-gradient-to-br from-gray-900 via-black to-gray-800 h-[85vh] w-[110%] max-w-md text-white text-xl flex flex-col justify-between items-start py-8 rounded-3xl shadow-2xl border border-gray-700 backdrop-blur-sm relative overflow-hidden">
-            {/* Background decorations omitted for brevity */}
-
+          <div
+            ref={navRef}
+            className="bg-gradient-to-br from-gray-900 via-black to-gray-800 h-[85vh] w-[110%] max-w-md text-white text-xl flex flex-col justify-between items-start py-8 rounded-3xl shadow-2xl border border-gray-700 backdrop-blur-sm relative overflow-hidden"
+          >
             {/* Navigation Links */}
             <div className="flex flex-col gap-6 px-6 w-full relative z-10">
               <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">
@@ -143,7 +236,7 @@ function Home() {
                 onMouseLeave={() => handleButtonHover(0, false)}
                 className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-full hover:from-red-700 hover:to-red-800 transition-all duration-300 shadow-lg hover:shadow-red-500/25 cursor-pointer font-semibold text-base flex items-center gap-2"
               >
-                 Logout
+                Logout
               </button>
 
               <button
@@ -153,21 +246,26 @@ function Home() {
                 onMouseLeave={() => handleButtonHover(1, false)}
                 className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-full hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-blue-500/25 cursor-pointer font-semibold text-base flex items-center gap-2"
               >
-                 Login
+                Login
               </button>
             </div>
-
-            {/* Animated border omitted for brevity */}
           </div>
         </div>
       </div>
 
       {/* Uploaded posts */}
-      <div className="w-full mt-10 flex flex-col gap-10 justify-center items-center pb-24" id="scroll-posts">
+      <div
+        className="w-full mt-10 flex flex-col gap-10 justify-center items-center pb-24"
+        id="scroll-posts"
+      >
         {uploads.length > 0 ? (
-          uploads.map((item) => <PostCard key={item._id} post={item} userId={userId} />)
+          uploads.map((item) => (
+            <PostCard key={item._id} post={item} userId={userId} />
+          ))
         ) : (
-          <p className="text-center text-gray-500 mt-20">No posts uploaded yet.</p>
+          <p className="text-center text-gray-500 mt-20">
+            No posts uploaded yet.
+          </p>
         )}
       </div>
 
