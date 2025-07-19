@@ -31,6 +31,7 @@ export const AuthProvider = ({ children }) => {
   const [uploadingPost, setUploadingPost] = useState(false);
 
   const Backend_URL = import.meta.env.VITE_BACKEND_URL;
+  const emailRedirectTo = import.meta.env.VITE_REDIRECT_URL;
 
   const navigate = useNavigate();
   const menuRef = useRef(null);
@@ -38,109 +39,111 @@ export const AuthProvider = ({ children }) => {
   const menuiconRef = useRef(null);
   const homeRef = useRef(null);
 
-const handlesignup = async () => {
-  setButtonLoading(true);
-  try {
-    const res = await axios.post(
-      `${Backend_URL}/api/auth/signup`,
-      {
-        email,
-        username,
-        password,
-      },
-      { withCredentials: true }
-    );
-
-    if (res.status == 201) {
-      localStorage.setItem("User", JSON.stringify(res.data.user));
-      setuser(res.data.user);
-      
-      toast.success(res.data.message);
-      setemail("");
-      setusername("");
-      setpassword("");
-      
-      await checkAuth();
-      navigate("/login");
-    }
-  } catch (err) {
-    const errorMessage =
-      err.response?.data?.message ||
-      "Something went wrong. Please try again.";
-    toast.error(errorMessage);
-  } finally {
-    setButtonLoading(false); // ✅ Always reset loading state
-  }
-};
-
-const handlelogin = async () => {
-  try {
-    const res = await axios.post(
-      `${Backend_URL}/api/auth/login`,
-      {
-        loginEmail,
-        loginPassword,
-      },
-      { withCredentials: true }
-    );
-
-    if (res.status === 200) {
-      localStorage.setItem("User", JSON.stringify(res.data.user));
-      setuser(res.data.user);
-      setisAuthenticated(true);
-
-      // ✅ Send Supabase magic link AFTER successful login
-      const { error } = await supabase.auth.signInWithOtp({
-        email: res.data.user.email,
-        options: {
-          shouldCreateUser: false, 
-          emailRedirectTo: window.location.origin,
+  const handlesignup = async () => {
+    setButtonLoading(true);
+    try {
+      const res = await axios.post(
+        `${Backend_URL}/api/auth/signup`,
+        {
+          email,
+          username,
+          password,
         },
+        { withCredentials: true }
+      );
+
+      if (res.status == 201) {
+        localStorage.setItem("User", JSON.stringify(res.data.user));
+        setuser(res.data.user);
+
+        toast.success(res.data.message);
+        setemail("");
+        setusername("");
+        setpassword("");
+
+        await checkAuth();
+        navigate("/login");
+      }
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.message ||
+        "Something went wrong. Please try again.";
+      toast.error(errorMessage);
+    } finally {
+      setButtonLoading(false); // ✅ Always reset loading state
+    }
+  };
+
+  const handlelogin = async () => {
+    try {
+      const res = await axios.post(
+        `${Backend_URL}/api/auth/login`,
+        {
+          loginEmail,
+          loginPassword,
+        },
+        { withCredentials: true }
+      );
+
+      if (res.status === 200) {
+        localStorage.setItem("User", JSON.stringify(res.data.user));
+        setuser(res.data.user);
+        setisAuthenticated(true);
+
+        // ✅ Send Supabase magic link AFTER successful login
+        const { error } = await supabase.auth.signInWithOtp({
+          email: res.data.user.email,
+          options: {
+            shouldCreateUser: false,
+            emailRedirectTo:
+              process.env.NODE_ENV === "production"
+                ? emailRedirectTo
+                : window.location.origin,
+          },
+        });
+
+        if (error) {
+          //  console.error("Supabase magic link error:", error.message);
+          toast.error("Could not send magic link. Please try again.");
+        } else {
+          toast.success("Magic link sent to your email! Check your inbox.");
+          setloginEmail("");
+          setloginPassword("");
+        }
+
+        await checkAuth();
+      }
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.message || "Login failed. Please try again.";
+      toast.error(errorMessage);
+      //  console.error("Login error:", errorMessage);
+    }
+  };
+
+  const checkAuth = async () => {
+    try {
+      const res = await axios.get(`${Backend_URL}/api/auth/verify`, {
+        withCredentials: true,
       });
 
-      if (error) {
-      //  console.error("Supabase magic link error:", error.message);
-        toast.error("Could not send magic link. Please try again.");
+      setcurrentUser(res.data.user);
+
+      if (res.data.success) {
+        setisAuthenticated(true);
       } else {
-        toast.success("Magic link sent to your email! Check your inbox.");
-        setloginEmail("");
-        setloginPassword("");
+        setisAuthenticated(false);
       }
-
-      await checkAuth();
-    }
-  } catch (err) {
-    const errorMessage =
-      err.response?.data?.message || "Login failed. Please try again.";
-    toast.error(errorMessage);
-  //  console.error("Login error:", errorMessage);
-  }
-};
-
-const checkAuth = async () => {
-  try {
-    const res = await axios.get(`${Backend_URL}/api/auth/verify`, {
-      withCredentials: true,
-    });
-
-    setcurrentUser(res.data.user);
-
-    if (res.data.success) {
-      setisAuthenticated(true);
-    } else {
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.message ||
+        "Something went wrong while checking authentication.";
+      console.error("Auth check error:", errorMessage);
       setisAuthenticated(false);
+    } finally {
+      setloading(false);
     }
-  } catch (err) {
-    const errorMessage =
-      err.response?.data?.message ||
-      "Something went wrong while checking authentication.";
-    console.error("Auth check error:", errorMessage);
-    setisAuthenticated(false);
-  } finally {
-    setloading(false);
-  }
-};
-
+  };
 
   function showmenu() {
     if (!menuRef.current || !cancelRef.current || !menuiconRef.current) return;
