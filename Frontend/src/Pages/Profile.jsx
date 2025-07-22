@@ -54,30 +54,34 @@ function Profile() {
   const displayedPosts = activeTab === "liked" ? likedPosts : createdPosts;
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
-      {/* Header */}
-      <div className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-10">
-        <div className="flex items-center justify-between px-6 py-4">
-          <FaArrowLeftLong
-            className="text-2xl cursor-pointer text-gray-700 hover:text-blue-500 transition-colors duration-200 hover:scale-110 transform"
+    <div className="w-full min-h-screen bg-gray-50">
+      {/* Mobile-First Header */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+        <div className="flex items-center justify-between px-4 py-3 max-w-md mx-auto sm:max-w-2xl">
+          <button
             onClick={() => navigate("/")}
-          />
+            className="p-2 -ml-2 rounded-full hover:bg-gray-100 active:bg-gray-200 transition-colors duration-200"
+          >
+            <FaArrowLeftLong className="text-xl text-gray-700" />
+          </button>
+          <h1 className="text-lg font-semibold text-gray-900">Profile</h1>
           <button 
             onClick={() => navigate('/Edit')} 
-            className="bg-gradient-to-r from-gray-800 to-black text-white px-6 py-2.5 rounded-full hover:from-gray-900 hover:to-gray-800 text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 transform"
+            className="bg-gray-900 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-800 active:bg-black transition-all duration-200"
           >
-            Edit Profile
+            Edit
           </button>
         </div>
       </div>
 
-      <div className="px-6 py-8">
-       
-        <div className="flex flex-col items-center mb-12 relative">
-     
-          <div className="relative mb-6">
-            <div className="w-36 h-36 rounded-full border-1 border-white shadow-2xl overflow-hidden  p-1">
-              <div className="w-full h-full rounded-full overflow-hidden bg-white">
+      {/* Profile Info Section */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-md mx-auto sm:max-w-2xl px-4 py-6">
+          <div className="flex flex-col items-center text-center space-y-4">
+            
+            {/* Profile Picture */}
+            <div className="relative">
+              <div className="w-24 h-24 rounded-full overflow-hidden ring-2 ring-gray-200">
                 <img
                   src={
                     user?.profileImage?.startsWith("http")
@@ -88,111 +92,146 @@ function Profile() {
                   className="object-cover w-full h-full"
                 />
               </div>
+              {/* Online indicator */}
+              <div className="absolute bottom-0 right-0 w-6 h-6 bg-green-500 rounded-full ring-2 ring-white"></div>
             </div>
-            {/* Online indicator */}
-            <div className="absolute bottom-2 right-2 w-6 h-6 bg-green-500 rounded-full border-3 border-white shadow-lg"></div>
-          </div>
 
-          {/* User Info */}
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-800 mb-2 capitalize">
-              {user?.username || "Username"}
-            </h1>
-            <button
-              onClick={() => fileInputRef.current.click()}
-              className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200 hover:underline"
-            >
-              {LoadingDp ? (
-                <span className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                  Changing Your Profile Picture...
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  Change Your profile picture 
-                  <FaUserEdit className="text-sm" />
-                </span>
-              )}
-            </button>
-            <input
-              type="file"
-              ref={fileInputRef}
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden"
-            />
+            {/* User Info */}
+            <div className="space-y-2">
+              <h1 className="text-xl font-bold text-gray-900 capitalize">
+                {user?.username || "Username"}
+              </h1>
+              <button
+                onClick={() => fileInputRef.current.click()}
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200 active:text-blue-800"
+              >
+                {LoadingDp ? (
+                  <span className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    Updating...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1">
+                    Change profile picture 
+                    <FaUserEdit className="text-xs" />
+                  </span>
+                )}
+              </button>
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+            </div>
+
+            {/* Stats Row */}
+            <div className="flex gap-12 pt-2">
+              <button
+                onClick={() => setActiveTab("liked")}
+                className={`text-center transition-all duration-200 ${
+                  activeTab === "liked" 
+                    ? "text-gray-900" 
+                    : "text-gray-500"
+                }`}
+              >
+                <div className="text-lg font-bold">{likedPosts.length}</div>
+                <div className="text-xs text-gray-500 flex items-center gap-1">
+                  <FaHeart className={activeTab === "liked" ? "text-red-500" : ""} />
+                  Liked
+                </div>
+              </button>
+
+              <button
+                onClick={() => setActiveTab("created")}
+                className={`text-center transition-all duration-200 ${
+                  activeTab === "created" 
+                    ? "text-gray-900" 
+                    : "text-gray-500"
+                }`}
+              >
+                <div className="text-lg font-bold">{createdPosts.length}</div>
+                <div className="text-xs text-gray-500 flex items-center gap-1">
+                  <FaImages className={activeTab === "created" ? "text-blue-500" : ""} />
+                  Posts
+                </div>
+              </button>
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Stats Tabs */}
-        <div className="flex gap-8 justify-center items-center mb-10">
-          <div
+      {/* Tab Navigation */}
+      <div className="bg-white border-b border-gray-200 sticky top-[73px] z-40">
+        <div className="max-w-md mx-auto sm:max-w-2xl flex">
+          <button
             onClick={() => setActiveTab("liked")}
-            className={`text-center cursor-pointer transition-all duration-300 p-4 rounded-xl hover:scale-105 transform ${
-              activeTab === "liked" 
-                ? "bg-gradient-to-r from-red-50 to-pink-50 text-red-600 shadow-lg border-2 border-red-200" 
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+            className={`flex-1 py-3 text-sm font-medium border-b-2 transition-all duration-200 ${
+              activeTab === "liked"
+                ? "text-gray-900 border-gray-900"
+                : "text-gray-500 border-transparent hover:text-gray-700"
             }`}
           >
-            <h2 className="text-sm mb-2 font-medium">Liked Posts</h2>
-            <div className="flex items-center justify-center gap-2 text-2xl font-bold">
-              <span>{likedPosts.length}</span>
-              <FaHeart className={`transition-colors duration-300 ${
-                activeTab === "liked" ? "text-red-500" : "text-gray-400"
-              }`} />
-            </div>
-          </div>
-
-          <div
+            <FaHeart className="inline mr-2" />
+            Liked Posts
+          </button>
+          <button
             onClick={() => setActiveTab("created")}
-            className={`text-center cursor-pointer transition-all duration-300 p-4 rounded-xl hover:scale-105 transform ${
-              activeTab === "created" 
-                ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-600 shadow-lg border-2 border-blue-200" 
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+            className={`flex-1 py-3 text-sm font-medium border-b-2 transition-all duration-200 ${
+              activeTab === "created"
+                ? "text-gray-900 border-gray-900"
+                : "text-gray-500 border-transparent hover:text-gray-700"
             }`}
           >
-            <h2 className="text-sm mb-2 font-medium">Total Posts</h2>
-            <div className="flex items-center justify-center gap-2 text-2xl font-bold">
-              <span>{createdPosts.length}</span>
-              <FaImages className={`transition-colors duration-300 ${
-                activeTab === "created" ? "text-blue-500" : "text-gray-400"
-              }`} />
-            </div>
-          </div>
+            <FaImages className="inline mr-2" />
+            Your Posts
+          </button>
         </div>
+      </div>
 
-        {/* Posts Section */}
-        <div className="bg-white/60 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200 p-8 w-full max-w-2xl mx-auto">
-          {/* Section Header */}
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-black bg-clip-text text-transparent mb-2">
-              {activeTab === "liked" ? "Posts You Liked" : "Your Posts"}
-            </h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mx-auto"></div>
-          </div>
-
-          {/* Posts Content */}
-          {displayedPosts.length === 0 ? (
-            <div clas sName="text-center py-16">
-              
-              <p className="text-gray-500 text-lg font-medium mb-4">
+      {/* Posts Feed */}
+      <div className="bg-gray-50 min-h-screen">
+        {displayedPosts.length === 0 ? (
+          // Empty State
+          <div className="max-w-md mx-auto sm:max-w-2xl px-4 py-16 text-center">
+            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-200">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                {activeTab === "liked" ? (
+                  <FaHeart className="text-2xl text-gray-400" />
+                ) : (
+                  <FaImages className="text-2xl text-gray-400" />
+                )}
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 {activeTab === "liked" ? "No liked posts yet" : "No posts created yet"}
-              </p>
-              <p className="text-gray-400 text-sm">
+              </h3>
+              <p className="text-gray-500 text-sm">
                 {activeTab === "liked" 
-                  ? "Start exploring and like some posts!" 
-                  : "Create your first post to get started!"
+                  ? "Posts you like will appear here" 
+                  : "Share your first post to get started"
                 }
               </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-6 w-full">
-              {displayedPosts.map((post, index) => (
-                <div 
-                  key={post._id}
-                  className="transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
-                  style={{ animationDelay: `${index * 0.1}s` }}
+              {activeTab === "created" && (
+                <button
+                  onClick={() => navigate("/create")}
+                  className="mt-4 bg-gray-900 text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors duration-200"
                 >
+                  Create Post
+                </button>
+              )}
+            </div>
+          </div>
+        ) : (
+          // Posts Feed - Identical to Home Feed
+          <div className="max-w-md mx-auto sm:max-w-2xl px-1">
+            <div className="space-y-0"> {/* No gaps for seamless mobile experience */}
+              {displayedPosts.map((post, index) => (
+                <div key={post._id} className="relative">
+                  {/* Add subtle separator between posts for better visual hierarchy */}
+                  {index > 0 && (
+                    <div className="h-2 bg-gray-100 border-t border-gray-200"></div>
+                  )}
                   <PostCard
                     post={post}
                     userId={currentUser?.userId}
@@ -202,9 +241,12 @@ function Profile() {
                 </div>
               ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
+
+
+      <div className="h-16 sm:h-4"></div>
     </div>
   );
 }

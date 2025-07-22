@@ -5,6 +5,8 @@ import { toast } from "react-toastify";
 import { useRef } from "react";
 import gsap from "gsap";
 import { supabase } from "../Utils/Supbase";
+
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -32,6 +34,7 @@ export const AuthProvider = ({ children }) => {
 
   const Backend_URL = import.meta.env.VITE_BACKEND_URL;
   const emailRedirectTo = import.meta.env.VITE_REDIRECT_URL;
+  const isProd = import.meta.env.MODE === "production";
 
   const navigate = useNavigate();
   const menuRef = useRef(null);
@@ -95,10 +98,9 @@ export const AuthProvider = ({ children }) => {
           email: res.data.user.email,
           options: {
             shouldCreateUser: false,
-            emailRedirectTo:
-              process.env.NODE_ENV === "production"
-                ? emailRedirectTo
-                : window.location.origin,
+            emailRedirectTo: isProd
+              ? "https://social-media18.netlify.app"
+              : "http://localhost:5173",
           },
         });
 
@@ -295,6 +297,28 @@ export const AuthProvider = ({ children }) => {
       toast.error("Failed to delete post");
     }
   };
+
+   useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate("/");
+      }
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === "SIGNED_IN" && session) {
+          navigate("/");
+        }
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
+
+
 
   useEffect(() => {
     checkAuth();

@@ -183,15 +183,9 @@ function Home() {
           onClick={() => navigate("/profile")}
         >
           <FaUser />
-          <span>User</span>
+          <span>Profile</span>
         </div>
-        <div
-          className="flex flex-col items-center text-gray-500"
-          onClick={() => navigate("/explore")}
-        >
-          <FaSearch />
-          <span>Explore</span>
-        </div>
+       
       </div>
 
       {/* Sidebar menu */}
@@ -273,7 +267,7 @@ function Home() {
       <div className="border-t border-[#e7edf3] bg-slate-50 px-10 pt-2 pb-3 flex justify-between text-[#4e7397] text-sm font-medium fixed bottom-0 left-0 right-0 z-10">
         <div className="flex items-center justify-between gap-10 w-full">
           <FaHome className="text-xl" onClick={() => navigate("/")} />
-          <FaSearch className="text-xl" onClick={() => navigate("/explore")} />
+    
           <FaPlus className="text-xl" onClick={() => navigate("/CreatePost")} />
           <FaUser className="text-xl" onClick={() => navigate("/profile")} />
         </div>

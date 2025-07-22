@@ -6,8 +6,10 @@ import { useState } from "react";
 function Login() {
   const navigate = useNavigate();
   const [clicked, setClicked] = useState(false);
+  const [Loading, setLoading] = useState(false);
 
   const handleClick = () => {
+    setLoading(true);
     if (!buttonLoading) {
       setClicked(true);
       setTimeout(() => setClicked(false), 150); // scale back after 150ms
@@ -26,6 +28,7 @@ function Login() {
   const handlesubmit = async (e) => {
     e.preventDefault();
     await handlelogin();
+    setLoading(false)
   };
   return (
     <div className="min-h-screen flex items-center justify-center  px-4 bg-black">
@@ -34,7 +37,6 @@ function Login() {
         onSubmit={handlesubmit}
       >
         <h2 className="text-2xl font-semibold mb-6 text-center">Login</h2>
-
         <div className="mb-4">
           <label htmlFor="email" className="block text-sm font-medium mb-1">
             Email
@@ -48,7 +50,6 @@ function Login() {
             className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring focus:ring-blue-400"
           />
         </div>
-
         <div className="mb-6">
           <label htmlFor="password" className="block text-sm font-medium mb-1">
             Password
@@ -62,7 +63,14 @@ function Login() {
             className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring focus:ring-blue-400"
           />
         </div>
-
+        {Loading ? (
+          <div className="flex flex-col items-center justify-center  space-y-4 pb-2">
+            <div className="w-12 h-12 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
+            <p className="text-gray-700 font-medium">Please Wait...</p>
+          </div>
+        ) : (
+          ""
+        )}
         <button
           type="submit"
           disabled={buttonLoading}
@@ -77,7 +85,6 @@ function Login() {
         >
           {buttonLoading ? "Sending Magic Link..." : "Send A Magic Link"}
         </button>
-
         <button
           onClick={() => navigate("/")}
           type="button"

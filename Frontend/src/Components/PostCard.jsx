@@ -1,8 +1,8 @@
+// PostCard.js
 import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
 import { CiHeart } from "react-icons/ci";
-import { FaRegHeart } from "react-icons/fa6";
-import { FaHeart } from "react-icons/fa6";
+import { FaRegHeart, FaHeart } from "react-icons/fa6";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "../Context/AuthContext";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -15,16 +15,16 @@ import { usePostAnalytics } from "../../Hooks/usePostAnalytics";
 
 function PostCard({ post, userId, HandleDeletePost, activeTab }) {
   const Backend_Url = import.meta.env.VITE_BACKEND_URL;
-
   const { currentUser } = useAuth();
-  const [isLiked, SetIsLiked] = useState(false);
+  const ref = useRef();
+  const videoRefs = useRef([]);
+
+  const [videoStates, setVideoStates] = useState({});
+
   const [likedBy, setLikedBy] = useState([]);
   const [likeCount, setLikeCount] = useState(0);
   const [likes, setLikes] = useState(false);
   const [showLikesModal, setShowLikesModal] = useState(false);
-  const ref = useRef();
-  const [startTime, setStartTime] = useState(null);
-  const [hasViewed, setHasViewed] = useState(false);
 
   usePostAnalytics({
     ref,
@@ -65,15 +65,63 @@ function PostCard({ post, userId, HandleDeletePost, activeTab }) {
         {},
         { withCredentials: true }
       );
-      SetIsLiked(true);
-
       setLikes(res.data.liked);
       setLikeCount(res.data.totalLikes);
       setLikedBy(res.data.likedBy);
-    } catch (err) {
-      //console.error("Error liking post:", err);
-    }
+    } catch (err) {}
   };
+
+
+
+
+  useEffect(() => {
+    const observers = [];
+
+    videoRefs.current.forEach((video, index) => {
+      if (!video) return;
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            video.play();
+            video.muted = false;
+            setVideoStates((prev) => ({
+              ...prev,
+              [index]: {
+                ...prev[index],
+                isPlaying: true,
+                isMuted: false,
+              },
+            }));
+          } else {
+            video.pause();
+            video.muted = true;
+            setVideoStates((prev) => ({
+              ...prev,
+              [index]: {
+                ...prev[index],
+                isPlaying: false,
+                isMuted: true,
+              },
+            }));
+          }
+        },
+        {
+          threshold: 0.5, // Adjust this as needed
+        }
+      );
+
+      observer.observe(video);
+      observers.push(observer);
+    });
+
+    return () => {
+      observers.forEach((observer, i) => {
+        const video = videoRefs.current[i];
+        if (video) observer.unobserve(video);
+      });
+    };
+  }, [post.files]);
 
   return (
     <div className="w-full flex justify-center px-4 py-2">
@@ -131,28 +179,67 @@ function PostCard({ post, userId, HandleDeletePost, activeTab }) {
 
               return (
                 <SwiperSlide key={index}>
-                  {file.mimetype.startsWith("image/") ? (
-                    <img
-                      src={mediaURL}
-                      alt={`media-${index}`}
-                      className="w-full h-[400px] object-cover"
-                    />
-                  ) : file.mimetype.startsWith("video/") ? (
-                    <video
-                      controls
-                      className="w-full h-[400px] object-cover"
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                    >
-                      <source src={mediaURL} type={file.mimetype} />
-                    </video>
-                  ) : (
-                    <div className="w-full h-[400px] flex items-center justify-center bg-gray-100">
-                      <p className="text-gray-500">Unsupported media type</p>
-                    </div>
-                  )}
+                  <div
+                    className="w-full flex items-center justify-center bg-black"
+                    style={{
+                      minHeight: "50vh",
+                      maxHeight: "70vh",
+                    }}
+                  >
+                    {file.mimetype.startsWith("image/") ? (
+                      <img
+                        src={mediaURL}
+                        alt={`media-${index}`}
+                        className="w-full h-full object-contain"
+                        style={{
+                          maxHeight: "70vh",
+                          width: "100%",
+                          objectFit: "contain",
+                        }}
+                        loading={index === 0 ? "eager" : "lazy"}
+                      />
+                    ) : file.mimetype.startsWith("video/") ? (
+                      <div className="relative w-full">
+                        <video
+                          ref={(el) => (videoRefs.current[index] = el)}
+                          autoPlay={false}
+                          muted={videoStates[index]?.isMuted ?? true}
+                          className="w-full h-full object-contain cursor-pointer"
+                          playsInline
+                          preload="metadata"
+                          onClick={() => {
+                            const video = videoRefs.current[index];
+                            if (!video) return;
+
+                            if (video.paused) {
+                              video.play();
+                              video.muted = false;
+                              setVideoStates((prevStates) => ({
+                                ...prevStates,
+                                [index]: { isPlaying: true, isMuted: false },
+                              }));
+                            } else {
+                              video.pause();
+                              video.muted = true;
+                              setVideoStates((prevStates) => ({
+                                ...prevStates,
+                                [index]: { isPlaying: false, isMuted: true },
+                              }));
+                            }
+                          }}
+                        >
+                          <source src={mediaURL} type={file.mimetype} />
+                          Your browser does not support the video tag.
+                        </video>
+
+                       
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center h-48 w-full">
+                        <p className="text-gray-400">Unsupported media type</p>
+                      </div>
+                    )}
+                  </div>
                 </SwiperSlide>
               );
             })}
