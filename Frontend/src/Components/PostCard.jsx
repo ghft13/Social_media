@@ -176,7 +176,7 @@ function PostCard({ post, userId, HandleDeletePost, activeTab }) {
 
               return (
                 <SwiperSlide key={index}>
-                  <div className="w-full bg-black">
+                  <div className="w-full">
                     {file.mimetype.startsWith("image/") ? (
                       <img
                         src={mediaURL}
