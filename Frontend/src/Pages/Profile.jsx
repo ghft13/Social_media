@@ -65,8 +65,8 @@ function Profile() {
             <FaArrowLeftLong className="text-xl text-gray-700" />
           </button>
           <h1 className="text-lg font-semibold text-gray-900">Profile</h1>
-          <button 
-            onClick={() => navigate('/Edit')} 
+          <button
+            onClick={() => navigate("/Edit")}
             className="bg-gray-900 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-800 active:bg-black transition-all duration-200"
           >
             Edit
@@ -78,23 +78,26 @@ function Profile() {
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-md mx-auto sm:max-w-2xl px-4 py-6">
           <div className="flex flex-col items-center text-center space-y-4">
-            
             {/* Profile Picture */}
-            <div className="relative">
-              <div className="w-24 h-24 rounded-full overflow-hidden ring-2 ring-gray-200">
-                <img
-                  src={
-                    user?.profileImage?.startsWith("http")
-                      ? user.profileImage
-                      : `${import.meta.env.VITE_BACKEND_URL}/${user.profileImage}`
-                  }
-                  alt="Profile"
-                  className="object-cover w-full h-full"
-                />
+            {user && (
+              <div className="relative">
+                <div className="w-24 h-24 rounded-full overflow-hidden ring-2 ring-gray-200">
+                  <img
+                    src={
+                      user.profileImage?.startsWith("http")
+                        ? user.profileImage
+                        : `${import.meta.env.VITE_BACKEND_URL}/${
+                            user.profileImage
+                          }`
+                    }
+                    alt="Profile"
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+            
+                <div className="absolute bottom-0 right-0 w-6 h-6 bg-green-500 rounded-full ring-2 ring-white"></div>
               </div>
-              {/* Online indicator */}
-              <div className="absolute bottom-0 right-0 w-6 h-6 bg-green-500 rounded-full ring-2 ring-white"></div>
-            </div>
+            )}
 
             {/* User Info */}
             <div className="space-y-2">
@@ -112,7 +115,7 @@ function Profile() {
                   </span>
                 ) : (
                   <span className="flex items-center gap-1">
-                    Change profile picture 
+                    Change profile picture
                     <FaUserEdit className="text-xs" />
                   </span>
                 )}
@@ -131,14 +134,14 @@ function Profile() {
               <button
                 onClick={() => setActiveTab("liked")}
                 className={`text-center transition-all duration-200 ${
-                  activeTab === "liked" 
-                    ? "text-gray-900" 
-                    : "text-gray-500"
+                  activeTab === "liked" ? "text-gray-900" : "text-gray-500"
                 }`}
               >
                 <div className="text-lg font-bold">{likedPosts.length}</div>
                 <div className="text-xs text-gray-500 flex items-center gap-1">
-                  <FaHeart className={activeTab === "liked" ? "text-red-500" : ""} />
+                  <FaHeart
+                    className={activeTab === "liked" ? "text-red-500" : ""}
+                  />
                   Liked
                 </div>
               </button>
@@ -146,14 +149,14 @@ function Profile() {
               <button
                 onClick={() => setActiveTab("created")}
                 className={`text-center transition-all duration-200 ${
-                  activeTab === "created" 
-                    ? "text-gray-900" 
-                    : "text-gray-500"
+                  activeTab === "created" ? "text-gray-900" : "text-gray-500"
                 }`}
               >
                 <div className="text-lg font-bold">{createdPosts.length}</div>
                 <div className="text-xs text-gray-500 flex items-center gap-1">
-                  <FaImages className={activeTab === "created" ? "text-blue-500" : ""} />
+                  <FaImages
+                    className={activeTab === "created" ? "text-blue-500" : ""}
+                  />
                   Posts
                 </div>
               </button>
@@ -204,13 +207,14 @@ function Profile() {
                 )}
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                {activeTab === "liked" ? "No liked posts yet" : "No posts created yet"}
+                {activeTab === "liked"
+                  ? "No liked posts yet"
+                  : "No posts created yet"}
               </h3>
               <p className="text-gray-500 text-sm">
-                {activeTab === "liked" 
-                  ? "Posts you like will appear here" 
-                  : "Share your first post to get started"
-                }
+                {activeTab === "liked"
+                  ? "Posts you like will appear here"
+                  : "Share your first post to get started"}
               </p>
               {activeTab === "created" && (
                 <button
@@ -225,7 +229,9 @@ function Profile() {
         ) : (
           // Posts Feed - Identical to Home Feed
           <div className="max-w-md mx-auto sm:max-w-2xl px-1">
-            <div className="space-y-0"> {/* No gaps for seamless mobile experience */}
+            <div className="space-y-0">
+              {" "}
+              {/* No gaps for seamless mobile experience */}
               {displayedPosts.map((post, index) => (
                 <div key={post._id} className="relative">
                   {/* Add subtle separator between posts for better visual hierarchy */}
@@ -244,7 +250,6 @@ function Profile() {
           </div>
         )}
       </div>
-
 
       <div className="h-16 sm:h-4"></div>
     </div>
