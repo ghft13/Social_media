@@ -71,9 +71,6 @@ function PostCard({ post, userId, HandleDeletePost, activeTab }) {
     } catch (err) {}
   };
 
-
-
-
   useEffect(() => {
     const observers = [];
 
@@ -154,7 +151,7 @@ function PostCard({ post, userId, HandleDeletePost, activeTab }) {
         </div>
 
         {/* Media Carousel */}
-        <div className="relative bg-gray-50">
+        <div className="relative bg-black">
           <Swiper
             spaceBetween={0}
             slidesPerView={1}
@@ -163,7 +160,7 @@ function PostCard({ post, userId, HandleDeletePost, activeTab }) {
               prevEl: ".custom-prev",
             }}
             modules={[Navigation]}
-            className="w-full h-[400px] relative"
+            className="w-full"
           >
             <div className="custom-prev absolute left-3 top-1/2 transform -translate-y-1/2 z-50 bg-white/80 backdrop-blur-sm hover:bg-white text-gray-700 rounded-full w-10 h-10 flex items-center justify-center shadow-lg cursor-pointer transition-all duration-200 hover:scale-110">
               <span className="text-lg font-bold">‹</span>
@@ -179,61 +176,45 @@ function PostCard({ post, userId, HandleDeletePost, activeTab }) {
 
               return (
                 <SwiperSlide key={index}>
-                  <div
-                    className="w-full flex items-center justify-center bg-black"
-                    style={{
-                      minHeight: "50vh",
-                      maxHeight: "70vh",
-                    }}
-                  >
+                  <div className="w-full bg-black">
                     {file.mimetype.startsWith("image/") ? (
                       <img
                         src={mediaURL}
                         alt={`media-${index}`}
-                        className="w-full h-full object-contain"
-                        style={{
-                          maxHeight: "70vh",
-                          width: "100%",
-                          objectFit: "contain",
-                        }}
+                        className="w-full h-auto block"
                         loading={index === 0 ? "eager" : "lazy"}
                       />
                     ) : file.mimetype.startsWith("video/") ? (
-                      <div className="relative w-full">
-                        <video
-                          ref={(el) => (videoRefs.current[index] = el)}
-                          autoPlay={false}
-                          muted={videoStates[index]?.isMuted ?? true}
-                          className="w-full h-full object-contain cursor-pointer"
-                          playsInline
-                          preload="metadata"
-                          onClick={() => {
-                            const video = videoRefs.current[index];
-                            if (!video) return;
-
-                            if (video.paused) {
-                              video.play();
-                              video.muted = false;
-                              setVideoStates((prevStates) => ({
-                                ...prevStates,
-                                [index]: { isPlaying: true, isMuted: false },
-                              }));
-                            } else {
-                              video.pause();
-                              video.muted = true;
-                              setVideoStates((prevStates) => ({
-                                ...prevStates,
-                                [index]: { isPlaying: false, isMuted: true },
-                              }));
-                            }
-                          }}
-                        >
-                          <source src={mediaURL} type={file.mimetype} />
-                          Your browser does not support the video tag.
-                        </video>
-
-                       
-                      </div>
+                      <video
+                        ref={(el) => (videoRefs.current[index] = el)}
+                        autoPlay={false}
+                        muted={videoStates[index]?.isMuted ?? true}
+                        className="w-full h-auto block cursor-pointer"
+                        playsInline
+                        preload="metadata"
+                        onClick={() => {
+                          const video = videoRefs.current[index];
+                          if (!video) return;
+                          if (video.paused) {
+                            video.play();
+                            video.muted = false;
+                            setVideoStates((prevStates) => ({
+                              ...prevStates,
+                              [index]: { isPlaying: true, isMuted: false },
+                            }));
+                          } else {
+                            video.pause();
+                            video.muted = true;
+                            setVideoStates((prevStates) => ({
+                              ...prevStates,
+                              [index]: { isPlaying: false, isMuted: true },
+                            }));
+                          }
+                        }}
+                      >
+                        <source src={mediaURL} type={file.mimetype} />
+                        Your browser does not support the video tag.
+                      </video>
                     ) : (
                       <div className="flex items-center justify-center h-48 w-full">
                         <p className="text-gray-400">Unsupported media type</p>
@@ -254,7 +235,7 @@ function PostCard({ post, userId, HandleDeletePost, activeTab }) {
         </div>
 
         {/* Content Section */}
-        <div className="px-5 py-4 space-y-3">
+        <div className="px-5 py-4 space-y-3 ">
           {/* Like Button and Count */}
           <div className="flex items-center space-x-4">
             <button
