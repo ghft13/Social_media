@@ -1,30 +1,32 @@
 // PostCard.js
-import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
-import { CiHeart } from "react-icons/ci";
 import { FaRegHeart, FaHeart } from "react-icons/fa6";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "../Context/AuthContext";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
-import Analytics from "../Pages/Analytics";
 import "swiper/css";
 import "swiper/css/navigation";
-import { sendAnalytics } from "../Utils/analytics";
 import { usePostAnalytics } from "../../Hooks/usePostAnalytics";
+import { useLikeHandler } from "../../Hooks/useLikeHandler";
+import { useVideoAutoPlay } from "../../Hooks/useVideoAutoPlay";
+import { formatLikedBy } from "../../Hooks/formatLikes";
 
 function PostCard({ post, userId, HandleDeletePost, activeTab }) {
-  const Backend_Url = import.meta.env.VITE_BACKEND_URL;
   const { currentUser } = useAuth();
   const ref = useRef();
-  const videoRefs = useRef([]);
 
-  const [videoStates, setVideoStates] = useState({});
-
-  const [likedBy, setLikedBy] = useState([]);
-  const [likeCount, setLikeCount] = useState(0);
-  const [likes, setLikes] = useState(false);
+  const Backend_Url = import.meta.env.VITE_BACKEND_URL;
   const [showLikesModal, setShowLikesModal] = useState(false);
+  const { likedBy, likeCount, likes, handleLike } = useLikeHandler({
+    post,
+    currentUser,
+    Backend_Url,
+  });
+
+  const { videoRefs, videoStates, setVideoStates } = useVideoAutoPlay(
+    post.files
+  );
 
   usePostAnalytics({
     ref,
@@ -39,86 +41,6 @@ function PostCard({ post, userId, HandleDeletePost, activeTab }) {
     return () => (document.body.style.overflow = "auto");
   }, [showLikesModal]);
 
-  useEffect(() => {
-    if (post.likes && post.likes.length > 0) {
-      const isPopulated =
-        typeof post.likes[0] === "object" && post.likes[0]?.username;
-
-      setLikedBy(post.likes);
-      setLikeCount(post.likes.length);
-      setLikes(
-        isPopulated
-          ? post.likes.some((user) => user._id === currentUser?.userId)
-          : post.likes.includes(currentUser?.userId)
-      );
-    } else {
-      setLikedBy([]);
-      setLikeCount(0);
-      setLikes(false);
-    }
-  }, [post.likes, currentUser]);
-
-  const handleLike = async () => {
-    try {
-      const res = await axios.post(
-        `${Backend_Url}/api/posts/${post._id}/like`,
-        {},
-        { withCredentials: true }
-      );
-      setLikes(res.data.liked);
-      setLikeCount(res.data.totalLikes);
-      setLikedBy(res.data.likedBy);
-    } catch (err) {}
-  };
-
-  useEffect(() => {
-    const observers = [];
-
-    videoRefs.current.forEach((video, index) => {
-      if (!video) return;
-
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            video.play();
-            video.muted = false;
-            setVideoStates((prev) => ({
-              ...prev,
-              [index]: {
-                ...prev[index],
-                isPlaying: true,
-                isMuted: false,
-              },
-            }));
-          } else {
-            video.pause();
-            video.muted = true;
-            setVideoStates((prev) => ({
-              ...prev,
-              [index]: {
-                ...prev[index],
-                isPlaying: false,
-                isMuted: true,
-              },
-            }));
-          }
-        },
-        {
-          threshold: 0.5, // Adjust this as needed
-        }
-      );
-
-      observer.observe(video);
-      observers.push(observer);
-    });
-
-    return () => {
-      observers.forEach((observer, i) => {
-        const video = videoRefs.current[i];
-        if (video) observer.unobserve(video);
-      });
-    };
-  }, [post.files]);
 
   return (
     <div className="w-full flex justify-center px-4 py-2">
@@ -239,7 +161,7 @@ function PostCard({ post, userId, HandleDeletePost, activeTab }) {
           {/* Like Button and Count */}
           <div className="flex items-center space-x-4">
             <button
-              onClick={handleLike}
+              onClick={()=>handleLike(post._id)}
               className={`flex items-center space-x-2 transition-all duration-200 ${
                 likes
                   ? "text-red-500 hover:text-red-600"
