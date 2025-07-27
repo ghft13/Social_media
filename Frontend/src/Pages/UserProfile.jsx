@@ -77,7 +77,7 @@ function UserProfile() {
   };
 
   return (
-    <div className="p-4 max-w-6xl mx-auto">
+    <div className="py-4 max-w-6xl mx-auto">
       {userdata.username ? (
         <div className="text-center mb-6">
           {/* Profile Image Container - always present */}
@@ -125,7 +125,7 @@ function UserProfile() {
             return (
               <div
                 key={post._id}
-                className="aspect-square bg-gray-200 cursor-pointer relative group"
+                className="aspect-square bg-gray-200 cursor-pointer relative group h-52"
                 onClick={() => openModal(index)}
               >
                 {mediaUrl ? (
