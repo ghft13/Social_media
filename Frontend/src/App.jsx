@@ -19,6 +19,7 @@ import CreatePost from "./Pages/CreatePost";
 import HomeFallback from "./Components/HomeFallback";
 import CommunityRules from "./Pages/CommunityRules";
 import Analytics from "./Pages/Analytics";
+import UserProfile from "./Pages/UserProfile";
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
             <Route path="/Community" element={<CommunityRules />}></Route>
             <Route path="/Edit" element={<Edit />}></Route>
             <Route path="/Analytics" element={<Analytics />}></Route>
+            <Route path="/profile/:user" element={<UserProfile />}></Route>
 
             <Route
               path="/Profile"

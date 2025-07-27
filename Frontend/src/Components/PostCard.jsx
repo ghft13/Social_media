@@ -11,6 +11,7 @@ import { usePostAnalytics } from "../../Hooks/usePostAnalytics";
 import { useLikeHandler } from "../../Hooks/useLikeHandler";
 import { useVideoAutoPlay } from "../../Hooks/useVideoAutoPlay";
 import { formatLikedBy } from "../../Hooks/formatLikes";
+import { Link } from "react-router-dom";
 
 function PostCard({ post, userId, HandleDeletePost, activeTab }) {
   const { currentUser } = useAuth();
@@ -58,7 +59,7 @@ function PostCard({ post, userId, HandleDeletePost, activeTab }) {
             </div>
             <div>
               <h1 className="text-sm font-bold text-gray-900">
-                {post.username}
+               <Link to={`/profile/${post.user}`}> {post.username}</Link>
               </h1>
               <p className="text-xs text-gray-500">
                 {formatDistanceToNow(new Date(post.createdAt), {
