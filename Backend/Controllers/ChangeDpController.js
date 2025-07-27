@@ -1,6 +1,7 @@
 // controllers/userController.js
 import UserModel from "../Models/UserModel.js"; // Import User model
 import bcrypt from "bcryptjs";
+import UploadModel from "../Models/UploadModel.js";
 export const updateProfileImage = async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -32,7 +33,7 @@ export const updateProfileImage = async (req, res) => {
 
 export const UpdateProfileData = async (req, res) => {
   const { username, previousEmail, email, oldPassword, newPassword } = req.body;
- 
+
   try {
     const userId = req.user.userId;
     const user = await UserModel.findById(userId);
@@ -85,5 +86,27 @@ export const UpdateProfileData = async (req, res) => {
   } catch (error) {
     // //console.error("Error updating profile:", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const GetUserPost = async (req, res) => {
+  const { user } = req.params;
+
+  try {
+
+    const userDetails=await UserModel.findById(user).select("username profileImage")
+   
+    const userPosts = await UploadModel.find({ user }).sort({ createdAt: -1 });
+
+    if (userPosts.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No posts found for this user" });
+    }
+
+    return res.status(200).json({ success: true, posts: userPosts,userDetails:userDetails });
+  } catch (err) {
+    console.error("Error fetching user posts:", err);
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 };
